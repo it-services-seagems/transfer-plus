@@ -1,0 +1,82 @@
+/* Tooltip.css */
+.tooltip-container {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip-trigger {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.tooltip-content {
+  position: absolute;
+  z-index: 100;
+  background-color: #002a4e; /* Atualizado para corresponder ao tema do app */
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  padding: 15px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  width: 350px;
+  top: 100%;
+  left: 0;
+  margin-top: 5px;
+  font-size: 14px;
+  color: white; /* Atualizado para corresponder ao tema do app */
+  border-left: 3px solid #4AE54A; /* Corresponde à cor da marca */
+}
+
+.tooltip-content:before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 20px;
+  border-width: 0 8px 8px 8px;
+  border-style: solid;
+  border-color: transparent transparent #002a4e transparent;
+}
+
+.single-source-tooltip ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.single-source-tooltip li {
+  margin-bottom: 5px;
+  text-align: left;
+}
+
+.tooltip-radio-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.info-icon {
+  margin-left: 5px;
+  font-size: 14px;
+  color: #4AE54A; /* Atualizado para corresponder ao tema do app */
+  cursor: help;
+}
+
+.tooltip-content ul {
+  padding-left: 20px;
+}
+
+.tooltip-content li {
+  margin-bottom: 5px;
+  font-size: 13px;
+}
+
+/* Melhorias adicionais para garantir boa experiência em telas menores */
+@media (max-width: 768px) {
+  .tooltip-content {
+    width: 280px;
+    left: 0;
+    transform: none;
+  }
+  
+  .tooltip-content:before {
+    left: 10%; /* Posição da seta ajustada para mobile */
+  }
+}

@@ -1,0 +1,359 @@
+/* ========================================
+   🎨 MENU PAGE - LAYOUT DE CARDS
+   ======================================== */
+
+.menu-page-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 100px; /* Espaço para o footer */
+}
+
+/* ========================================
+   📱 HEADER PRINCIPAL
+   ======================================== */
+
+.menu-header-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  padding: 10px 30px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  margin-bottom: 23px;
+  border: 1px solid rgba(43, 90, 142, 0.1);
+}
+
+.menu-logo-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.menu-logo-img {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.menu-title-section h1 {
+  color: #004795;
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.menu-title-section p {
+  color: #254291;
+  font-size: 14px;
+  margin: 4px 0 0 0;
+}
+
+.menu-user-section {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.menu-user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.menu-user-avatar {
+  width: 45px;
+  height: 45px;
+  background: linear-gradient(135deg, #0d1c2d, #4285f4);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.menu-user-details {
+  text-align: right;
+}
+
+.menu-user-name {
+  color: #2B5A8E;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.menu-user-role {
+  color: #6c757d;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.menu-logout-btn {
+  background: linear-gradient(135deg, #532529, #d20015);
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.menu-logout-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(220, 53, 69, 0.3);
+}
+
+/* ========================================
+   🎯 WELCOME SECTION
+   ======================================== */
+
+.menu-welcome {
+  text-align: center;
+  margin-bottom: 40px;
+  padding: 0 20px;
+}
+
+.menu-welcome h2 {
+  color: #2B5A8E;
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.menu-welcome p {
+  color: #6c757d;
+  font-size: 18px;
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+
+/* ========================================
+   🃏 CARDS GRID
+   ======================================== */
+
+.menu-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+  padding: 40px 77px;
+  max-width: 1400px;
+  margin: -51px auto;
+  width: 100%;
+  flex: 1;
+}
+
+.menu-card {
+  background: #2B5A8E;
+  border-radius: 12px;
+  padding: 24px;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 8px 32px rgba(43, 90, 142, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.menu-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+  pointer-events: none;
+}
+
+.menu-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 16px 48px rgba(43, 90, 142, 0.3);
+  background: linear-gradient(135deg, #2B5A8E 0%, #4285f4 100%);
+}
+
+.menu-card-content {
+  text-align: center;
+  color: white;
+  position: relative;
+  z-index: 1;
+}
+
+.menu-card-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  display: block;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.menu-card-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.menu-card-subtitle {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+.menu-card-description {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  font-style: italic;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ========================================
+   📄 FOOTER
+   ======================================== */
+
+.menu-footer-info {
+  margin-top: auto;
+  padding: 20px;
+  text-align: center;
+  background-color: #f5f5f5;
+  border-top: 1px solid #ddd;
+  color: #6c757d;
+  font-size: 14px;
+}
+
+.menu-footer-info p {
+  margin: 4px 0;
+}
+
+.menu-footer-info strong {
+  color: #2B5A8E;
+}
+
+/* ========================================
+   📱 RESPONSIVIDADE
+   ======================================== */
+
+@media (max-width: 1200px) {
+  .menu-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+    padding: 30px 40px;
+  }
+}
+
+@media (max-width: 768px) {
+  .menu-cards-grid {
+    grid-template-columns: 1fr;
+    padding: 20px;
+  }
+  
+  .menu-page-container {
+    padding-bottom: 120px;
+  }
+  
+  .menu-header-main {
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+    text-align: center;
+  }
+  
+  .menu-user-section {
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .menu-welcome h2 {
+    font-size: 24px;
+  }
+  
+  .menu-welcome p {
+    font-size: 16px;
+  }
+  
+  .menu-card {
+    padding: 24px 20px;
+    min-height: 160px;
+  }
+  
+  .menu-card-icon {
+    font-size: 40px;
+    margin-bottom: 12px;
+  }
+  
+  .menu-card-title {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .menu-welcome h2 {
+    font-size: 20px;
+  }
+  
+  .menu-welcome p {
+    font-size: 14px;
+  }
+  
+  .menu-card {
+    padding: 20px 16px;
+    min-height: 140px;
+  }
+  
+  .menu-card-icon {
+    font-size: 36px;
+  }
+  
+  .menu-card-title {
+    font-size: 16px;
+  }
+  
+  .menu-card-subtitle {
+    font-size: 13px;
+  }
+}
+
+/* ========================================
+   🎨 ANIMAÇÕES E EFEITOS
+   ======================================== */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.menu-card {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.menu-card:nth-child(1) { animation-delay: 0.1s; }
+.menu-card:nth-child(2) { animation-delay: 0.2s; }
+.menu-card:nth-child(3) { animation-delay: 0.3s; }
+.menu-card:nth-child(4) { animation-delay: 0.4s; }
+.menu-card:nth-child(5) { animation-delay: 0.5s; }
+.menu-card:nth-child(6) { animation-delay: 0.6s; }
