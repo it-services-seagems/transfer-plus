@@ -5,6 +5,7 @@
 🚀 TRANSFERPLUS API SERVER - VERSÃO COM DEBUG DETALHADO
 ===============================================
 API Flask para o sistema TransferPlus com funcionalidades de:
+    pass
 - ✅ Upload de arquivos Excel (.xlsx, .xlsb, .xls)
 - ✅ CORS configurado corretamente
 - ✅ Autenticação via headers
@@ -21,6 +22,7 @@ import os
 import sys
 import tempfile
 import traceback
+import logging
 from datetime import datetime, timedelta
 import pandas as pd
 import numpy as np
@@ -42,7 +44,7 @@ app = Flask(__name__)
 # Configuração CORS mais simples para desenvolvimento
 CORS(app, resources={
     r"/*": {
-        "origins": ["http://10.15.3.30:9282", "http://127.0.0.1:5173", "http://transferplus.snm.local", "http://transferplus.snm.local:9282"],
+        "origins": ["http://10.15.3.30:9282", "http://localhost:9282", "http://127.0.0.1:5173", "http://localhost:5173", "http://transferplus.snm.local", "http://transferplus.snm.local:9282"],
         "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         "allow_headers": ["Content-Type", "Authorization", "x-user-name", "x-user-type"],
         "supports_credentials": False
@@ -52,6 +54,7 @@ CORS(app, resources={
 # Lista de origens permitidas (manter em sincronia com o CORS acima)
 ALLOWED_ORIGINS = [
     "http://10.15.3.30:9282",
+    "http://localhost:9282",
     "http://127.0.0.1:5173",
     "http://localhost:5173",
     "http://transferplus.snm.local",
@@ -82,10 +85,7 @@ def after_request(response):
 def handle_preflight():
     """Tratar requests OPTIONS (preflight) de forma explícita"""
     if request.method == "OPTIONS":
-        print(f"🔄 PREFLIGHT REQUEST para {request.path}")
-        print(f"📋 Origin: {request.headers.get('Origin')}")
-        print(f"📋 Access-Control-Request-Method: {request.headers.get('Access-Control-Request-Method')}")
-        print(f"📋 Access-Control-Request-Headers: {request.headers.get('Access-Control-Request-Headers')}")
+        pass
         
         # Criar response para preflight
         response = make_response()
@@ -101,38 +101,31 @@ def handle_preflight():
         response.headers['Access-Control-Max-Age'] = '3600'
         response.headers['Content-Length'] = '0'
         
-        print(f"✅ PREFLIGHT RESPONSE - Status: {response.status_code}")
-        print(f"📤 Headers enviados: {dict(response.headers)}")
         return response
     else:
         # Para requests que não são OPTIONS, continuar normalmente
-        print(f"➡️ Request {request.method} {request.path} - continuando processamento normal")
+        pass
 
 @app.before_request
 def log_request_info():
-    print(f'🔍 {request.method} {request.url}')
-    print(f'📋 Headers: {dict(request.headers)}')
-    print(f'🌐 Origin: {request.headers.get("Origin", "No Origin")}')
+    pass
     
     if request.method == 'POST':
-        print(f'📄 Content-Type: {request.content_type}')
-        print(f'📄 Content-Length: {request.content_length}')
-        print(f'🔑 Auth Headers: x-user-name={request.headers.get("x-user-name")}, x-user-type={request.headers.get("x-user-type")}')
+        pass
     
     # Log especial para upload
     if 'upload' in request.url:
-        print(f'📤 UPLOAD REQUEST DETECTED - Method: {request.method}')
-        print(f'📋 All headers: {dict(request.headers)}')
+        pass
         if request.files:
-            print(f'📁 Files in request: {list(request.files.keys())}')
+            pass
         
         # Se é POST mas não tem arquivos, pode ser problema
         if request.method == 'POST' and not request.files:
-            print(f'⚠️ POST sem arquivos detectado!')
+            pass
     
     # Log especial para depois do preflight
     if request.method == 'POST' and 'upload' in request.url:
-        print(f'🎯 POST REQUEST CHEGOU! Processando upload...')
+        pass
 
 # ========================================
 # 🔧 SISTEMA DE SESSÕES
@@ -215,7 +208,7 @@ def test_cors():
 # Endpoint de teste específico para POST
 @app.route('/test-post', methods=['POST', 'OPTIONS'])
 def test_post():
-    print(f"🧪 TEST POST ENDPOINT - Method: {request.method}")
+    pass
     if request.method == 'POST':
         return jsonify({
             "message": "POST test successful!",
@@ -229,7 +222,6 @@ def test_post():
 @app.route('/test-sql', methods=['GET', 'OPTIONS'])
 def test_sql():
     """Testar conexão com SQL Server"""
-    print("🔍 Testando conexão SQL Server...")
     
     try:
         conn = get_sql_connection()
@@ -273,7 +265,7 @@ def test_sql():
         }), 200
         
     except Exception as e:
-        print(f"❌ Erro no teste SQL: {e}")
+        pass
         return jsonify({
             "status": "error", 
             "message": f"Erro: {str(e)}",
@@ -294,7 +286,6 @@ LDAP_PASSWORD = "xmZ7P@5vkKzg"
 @app.route('/api/login', methods=['POST', 'OPTIONS'])
 def login():
     """Endpoint de login que sempre redireciona para /menu"""
-    print("🔐 LOGIN REQUEST RECEBIDO")
 
     try:
         data = request.get_json()
@@ -307,13 +298,12 @@ def login():
         if not username or not password:
             return jsonify({"status": "error", "message": "Username e password são obrigatórios"}), 400
 
-        print(f"🔍 Tentativa de login para: {username}")
 
         # Autenticar no Active Directory
         auth_result = authenticate_user_in_ad(username, password)
 
         if auth_result.get("status") != "success":
-            print(f"❌ Falha na autenticação: {auth_result.get('message')}")
+            pass
             return jsonify({
                 "status": "error", 
                 "message": auth_result.get("message", "Credenciais inválidas")
@@ -342,7 +332,6 @@ def login():
             "last_used": datetime.now()
         }
 
-        print(f"✅ Login bem-sucedido para {username} - Tipo: {user_data['user_type']}")
 
         # SEMPRE retornar sucesso e deixar o frontend decidir onde ir
         return jsonify({
@@ -353,7 +342,7 @@ def login():
         }), 200
 
     except Exception as e:
-        print(f"❌ Erro no endpoint de login: {e}")
+        pass
         traceback.print_exc()
         return jsonify({
             "status": "error",
@@ -362,7 +351,7 @@ def login():
 
 def authenticate_user_in_ad(login, password):
     try:
-        print(f"\n🔐 Iniciando autenticação no Active Directory para: {login}")
+        pass
 
         # 🔌 Conectar ao servidor LDAP
         server = Server(LDAP_SERVER, get_info=ALL)
@@ -370,9 +359,8 @@ def authenticate_user_in_ad(login, password):
         # 🔐 Conexão administrativa para busca de DN
         try:
             admin_conn = Connection(server, user=LDAP_USER_DN, password=LDAP_PASSWORD, auto_bind=True)
-            print("✅ Conexão administrativa bem-sucedida.")
         except Exception as e:
-            print(f"❌ Erro ao conectar como admin: {e}")
+            pass
             return {"status": "error", "message": "Erro interno na conexão LDAP admin."}
 
         # 🧠 Gera variações possíveis para localizar o usuário
@@ -400,10 +388,9 @@ def authenticate_user_in_ad(login, password):
                     if admin_conn.entries:
                         user_entry = admin_conn.entries[0]
                         user_dn = user_entry.distinguishedName.value
-                        print(f"🔎 Usuário localizado: {user_dn}")
                         break
                 except Exception as e:
-                    print(f"⚠️ Erro ao buscar no LDAP com {filter_str}: {e}")
+                    pass
             if user_dn:
                 break
 
@@ -415,14 +402,12 @@ def authenticate_user_in_ad(login, password):
         try:
             Connection(server, user=user_dn, password=password, auto_bind=True)
             auth_success = True
-            print("✅ Autenticação com DN bem-sucedida.")
         except Exception as e1:
             try:
                 Connection(server, user=f"SNM\\{login.split('@')[0]}", password=password, auto_bind=True)
                 auth_success = True
-                print("✅ Autenticação com SNM\\username bem-sucedida.")
             except Exception as e2:
-                print(f"❌ Falha na autenticação: {e1} | {e2}")
+                pass
                 return {"status": "error", "message": "Credenciais inválidas."}
 
         # 🧾 Coleta atributos do usuário
@@ -435,7 +420,6 @@ def authenticate_user_in_ad(login, password):
         # 🧠 Mapeia permissões com base em grupo
         config = determine_form_type(user_dn, groups_cn)
 
-        print(f"👤 Autenticado: {sam_account} | Tipo: {config['user_type']} | OU: {ous}")
 
         return {
             "status": "success",
@@ -451,7 +435,7 @@ def authenticate_user_in_ad(login, password):
         }
 
     except Exception as e:
-        print(f"❌ Erro inesperado em authenticate_user_in_ad: {e}")
+        pass
         traceback.print_exc()
         return {"status": "error", "message": f"Erro interno: {e}"}
 
@@ -538,13 +522,12 @@ def logout():
             if token in active_sessions:
                 username = active_sessions[token]['user']['username']
                 del active_sessions[token]
-                print(f"✅ Logout realizado para {username}")
                 return jsonify({"status": "success", "message": "Logout realizado com sucesso"})
         
         return jsonify({"status": "error", "message": "Token inválido"}), 401
         
     except Exception as e:
-        print(f"❌ Erro no logout: {str(e)}")
+        pass
         return jsonify({"status": "error", "message": "Erro interno do servidor"}), 500
 
 # Endpoint para verificar se a sessão está válida
@@ -566,7 +549,7 @@ def verify_session():
         return jsonify({"status": "error", "valid": False}), 401
         
     except Exception as e:
-        print(f"❌ Erro na verificação de sessão: {str(e)}")
+        pass
         return jsonify({"status": "error", "valid": False}), 500
 # ========================================
 # 🔐 CONFIGURAÇÃO DE AUTENTICAÇÃO
@@ -618,8 +601,7 @@ def get_sql_connection():
     
     for i, conn_str in enumerate(connection_strings, 1):
         try:
-            print(f"🔌 Tentativa {i}: Conectando ao SQL Server...")
-            print(f"📋 String de conexão: {conn_str.split(';')[1]}")  # Mostra apenas o SERVER
+            pass
             
             conn = pyodbc.connect(conn_str)
             conn.autocommit = False  # Controle manual de transações
@@ -630,20 +612,12 @@ def get_sql_connection():
             version = cursor.fetchone()[0]
             cursor.close()
             
-            print(f"✅ Conexão bem-sucedida (Estratégia {i})!")
-            print(f"📊 SQL Server Version: {version[:50]}...")
             return conn
             
         except Exception as e:
-            print(f"❌ Estratégia {i} falhou: {str(e)[:100]}...")
+            pass
             continue
     
-    print("❌ Todas as tentativas de conexão falharam!")
-    print("🔧 Diagnósticos:")
-    print("   1. Verifique se o SQL Server está rodando")
-    print("   2. Confirme o nome do servidor: MCLOSQL01")
-    print("   3. Verifique se o banco 'TransferPlus' existe")
-    print("   4. Teste conectividade de rede: ping MCLOSQL01")
     return None
 
 # ========================================
@@ -653,67 +627,56 @@ def get_sql_connection():
 def obter_dataframe_do_upload(caminho_arquivo):
     """Função para ler o arquivo Excel enviado via upload"""
     try:
-        print(f"📖 Lendo arquivo Excel: {caminho_arquivo}")
+        pass
         
         # Determinar engine baseado na extensão do arquivo
         extensao = caminho_arquivo.lower()
         if extensao.endswith('.xlsb'):
             engine = 'pyxlsb'
-            print("🔧 Usando engine: pyxlsb para arquivo .xlsb")
         elif extensao.endswith('.xlsx'):
             engine = 'openpyxl'
-            print("🔧 Usando engine: openpyxl para arquivo .xlsx")
         elif extensao.endswith('.xls'):
             engine = 'xlrd'
-            print("🔧 Usando engine: xlrd para arquivo .xls")
         else:
             engine = 'openpyxl'  # Fallback
-            print("🔧 Usando engine padrão: openpyxl")
         
         # Tentar ler o arquivo com diferentes estratégias
         df = None
         
         # Estratégia 1: Tentar com o engine específico
         try:
-            print(f"📊 Tentativa 1: Lendo com engine {engine}")
+            pass
             df = pd.read_excel(caminho_arquivo, sheet_name=0, header=0, engine=engine)
-            print(f"✅ Sucesso com engine {engine}")
         except Exception as e1:
-            print(f"❌ Falhou com {engine}: {e1}")
+            pass
             
             # Estratégia 2: Tentar com openpyxl se não foi o primeiro
             if engine != 'openpyxl':
                 try:
-                    print("📊 Tentativa 2: Lendo com engine openpyxl")
+                    pass
                     df = pd.read_excel(caminho_arquivo, sheet_name=0, header=0, engine='openpyxl')
-                    print("✅ Sucesso com openpyxl")
                 except Exception as e2:
-                    print(f"❌ Falhou com openpyxl: {e2}")
+                    pass
             
             # Estratégia 3: Se .xlsb falhou, tentar sem especificar engine
             if df is None and extensao.endswith('.xlsb'):
                 try:
-                    print("📊 Tentativa 3: Lendo arquivo .xlsb sem especificar engine")
+                    pass
                     df = pd.read_excel(caminho_arquivo, sheet_name=0, header=0)
-                    print("✅ Sucesso sem especificar engine")
                 except Exception as e3:
-                    print(f"❌ Falhou sem engine: {e3}")
+                    pass
         
         if df is None:
-            print("❌ Todas as tentativas de leitura falharam")
+            pass
             return None
         
-        print(f"✅ Arquivo lido com sucesso: {len(df)} registros encontrados")
-        print(f"📋 Colunas encontradas: {list(df.columns)}")
         
         # Mostrar preview das primeiras linhas
-        print("📊 Preview das primeiras 3 linhas:")
-        print(df.head(3).to_string())
         
         return df
         
     except Exception as e:
-        print(f"❌ Erro geral ao ler o arquivo: {e}")
+        pass
         import traceback
         traceback.print_exc()
         return None
@@ -724,7 +687,6 @@ def processar_dados_excel(df, autor):
         if df is None or df.empty:
             return None, "DataFrame vazio"
         
-        print(f"📊 Colunas disponíveis no DataFrame: {list(df.columns)}")
         
         # DE/PARA: Mapeamento das colunas do Excel para a tabela SQL Server (CORRIGIDO)
         mapeamento_colunas = {
@@ -746,29 +708,28 @@ def processar_dados_excel(df, autor):
         # Aplicar mapeamento
         for coluna_excel, coluna_sql in mapeamento_colunas.items():
             if coluna_excel in df.columns:
-                print(f"🔗 Mapeando: {coluna_excel} -> {coluna_sql}")
+                pass
                 df_mapeado[coluna_sql] = df[coluna_excel]
             else:
-                print(f"⚠️ ATENÇÃO: Coluna '{coluna_excel}' não encontrada no Excel")
+                pass
         
         if df_mapeado.empty:
             return None, "Nenhuma coluna válida foi mapeada"
         
         # Limpeza e conversão de tipos
-        print("🧹 Limpando e convertendo dados...")
         
         # Campos inteiros
         campos_inteiros = ['QuantityToBeTransferred_QuantidadeATransferir']
         for campo in campos_inteiros:
             if campo in df_mapeado.columns:
-                print(f"🔢 Convertendo campo inteiro: {campo}")
+                pass
                 df_mapeado[campo] = pd.to_numeric(df_mapeado[campo], errors='coerce').fillna(0).astype(int)
         
         # Campos decimais
         campos_decimais = ['TotalAmount_USD_ValorTotal_USD']
         for campo in campos_decimais:
             if campo in df_mapeado.columns:
-                print(f"💰 Convertendo campo decimal: {campo}")
+                pass
                 df_mapeado[campo] = pd.to_numeric(df_mapeado[campo], errors='coerce').fillna(0.0)
         
         # Campos de texto
@@ -780,34 +741,28 @@ def processar_dados_excel(df, autor):
         ]
         for campo in campos_texto:
             if campo in df_mapeado.columns:
-                print(f"📝 Convertendo campo texto: {campo}")
+                pass
                 df_mapeado[campo] = df_mapeado[campo].astype(str).str.strip()
         
         # Adicionar campos de auditoria
         agora = datetime.now()
         df_mapeado['Created'] = agora
         df_mapeado['Modified'] = agora
-        print(f"📝 Convertendo campo texto: AuthorId")
         df_mapeado['AuthorId'] = autor if autor else 'UPLOAD_SYSTEM'
         
         # Remover linhas vazias
         df_final = df_mapeado.dropna(how='all')
         
-        print(f"✅ Dados processados: {len(df_final)} registros válidos")
-        print(f"📋 Colunas finais: {list(df_final.columns)}")
         
         return df_final, "Processamento concluído com sucesso"
         
     except Exception as e:
-        print(f"❌ Erro no processamento: {e}")
+        pass
         traceback.print_exc()
         return None, f"Erro no processamento: {str(e)}"
 
 def verificar_estrutura_tabela(cursor):
     """Função para verificar detalhadamente a estrutura da tabela"""
-    print("\n" + "="*80)
-    print("🔍 VERIFICAÇÃO DETALHADA DA ESTRUTURA DA TABELA")
-    print("="*80)
     
     try:
         # Verificar se a tabela existe
@@ -817,7 +772,6 @@ def verificar_estrutura_tabela(cursor):
             WHERE TABLE_NAME = 'Desembarque' AND TABLE_SCHEMA = 'dbo'
         """)
         table_exists = cursor.fetchone()[0] > 0
-        print(f"📋 Tabela existe: {'✅ SIM' if table_exists else '❌ NÃO'}")
         
         if not table_exists:
             return False, "Tabela 'Desembarque' não encontrada"
@@ -845,10 +799,6 @@ def verificar_estrutura_tabela(cursor):
         
         colunas = cursor.fetchall()
         
-        print(f"\n📊 ESTRUTURA DA TABELA (Total: {len(colunas)} colunas):")
-        print("-" * 120)
-        print(f"{'#':<3} {'COLUNA':<40} {'TIPO':<15} {'TAMANHO':<10} {'NULLABLE':<8} {'IDENTITY':<8} {'DEFAULT':<15}")
-        print("-" * 120)
         
         colunas_identity = []
         for i, col in enumerate(colunas, 1):
@@ -866,18 +816,15 @@ def verificar_estrutura_tabela(cursor):
             
             default_str = str(default)[:14] if default else "-"
             
-            print(f"{i:<3} {nome:<40} {tipo:<15} {tamanho_str:<10} {nullable:<8} {identity:<8} {default_str:<15}")
             
             if identity == 'YES':
                 colunas_identity.append(nome)
         
-        print("-" * 120)
-        print(f"🔑 Colunas IDENTITY encontradas: {colunas_identity if colunas_identity else 'NENHUMA'}")
         
         return True, colunas_identity
         
     except Exception as e:
-        print(f"❌ Erro ao verificar estrutura da tabela: {e}")
+        pass
         return False, f"Erro: {str(e)}"
     
 def processar_valores_decimais(serie):
@@ -903,16 +850,13 @@ def processar_valores_decimais(serie):
 
 def validar_tipos_dados(df, colunas_sql):
     """Validar e converter tipos de dados antes da inserção"""
-    print("\n" + "="*80)
-    print("🔍 VALIDAÇÃO DETALHADA DOS TIPOS DE DADOS")
-    print("="*80)
     
     problemas = []
     df_validado = df.copy()
     
     for i, col in enumerate(colunas_sql):
         if col in df_validado.columns:
-            print(f"\n📋 Analisando coluna {i+1}/{len(colunas_sql)}: {col}")
+            pass
             
             # Estatísticas básicas da coluna
             serie = df_validado[col]
@@ -920,16 +864,13 @@ def validar_tipos_dados(df, colunas_sql):
             nulos = serie.isna().sum()
             nao_nulos = total - nulos
             
-            print(f"   📊 Total: {total} | Nulos: {nulos} | Não-nulos: {nao_nulos}")
             
             if nao_nulos > 0:
                 # Tipos únicos encontrados
                 tipos_unicos = serie.dropna().apply(type).unique()
-                print(f"   🔧 Tipos encontrados: {[t.__name__ for t in tipos_unicos]}")
                 
                 # Amostras de valores
                 amostras = serie.dropna().head(5).tolist()
-                print(f"   📝 Amostras: {amostras}")
                 
                 # Verificações específicas por tipo esperado
                 if col in ['QuantityToBeTransferred_QuantidadeATransferir']:
@@ -940,16 +881,14 @@ def validar_tipos_dados(df, colunas_sql):
                         problemas_conversao = serie[~serie.isna() & convertidos.isna()]
                         
                         if len(problemas_conversao) > 0:
-                            print(f"   ⚠️ Valores problemáticos para INT: {problemas_conversao.tolist()[:5]}")
+                            pass
                             problemas.append(f"Coluna {col}: {len(problemas_conversao)} valores não conversíveis para INT")
                         
                         # Aplicar conversão limpa
                         df_validado[col] = convertidos.fillna(0).astype('int64')
-                        print(f"   ✅ Convertido para INT64")
                         
                     except Exception as e:
                         problemas.append(f"Coluna {col}: Erro na conversão INT - {str(e)}")
-                        print(f"   ❌ Erro na conversão INT: {e}")
                 
                 elif col in ['TotalAmount_USD_ValorTotal_USD']:
                     # Campo DECIMAL(19,2) - já processado pela função processar_valores_decimais
@@ -959,28 +898,24 @@ def validar_tipos_dados(df, colunas_sql):
                         problemas_conversao = serie[~serie.isna() & convertidos.isna()]
                         
                         if len(problemas_conversao) > 0:
-                            print(f"   ⚠️ Valores problemáticos para DECIMAL: {problemas_conversao.tolist()[:5]}")
+                            pass
                             problemas.append(f"Coluna {col}: {len(problemas_conversao)} valores não conversíveis para DECIMAL")
                         
                         # Garantir que valores estão como float com 2 casas decimais
                         df_validado[col] = convertidos.fillna(0.0).round(2).astype('float64')
-                        print(f"   ✅ Convertido para DECIMAL(19,2)")
                         
                     except Exception as e:
                         problemas.append(f"Coluna {col}: Erro na conversão DECIMAL - {str(e)}")
-                        print(f"   ❌ Erro na conversão DECIMAL: {e}")
                 
                 elif col in ['Created', 'Modified']:
                     # Campos datetime
                     if not pd.api.types.is_datetime64_any_dtype(serie):
                         try:
                             df_validado[col] = pd.to_datetime(serie)
-                            print(f"   ✅ Convertido para DATETIME")
                         except Exception as e:
                             problemas.append(f"Coluna {col}: Erro na conversão DATETIME - {str(e)}")
-                            print(f"   ❌ Erro na conversão DATETIME: {e}")
                     else:
-                        print(f"   ✅ Já é DATETIME")
+                        pass
                 
                 else:
                     # Campos de texto
@@ -990,29 +925,24 @@ def validar_tipos_dados(df, colunas_sql):
                         tamanhos = df_validado[col].str.len()
                         max_tamanho = tamanhos.max()
                         
-                        print(f"   📏 Maior string: {max_tamanho} caracteres")
                         
                         # Verificar se há strings muito longas (>500 chars como warning)
                         strings_longas = df_validado[col][tamanhos > 500]
                         if len(strings_longas) > 0:
-                            print(f"   ⚠️ {len(strings_longas)} strings muito longas (>500 chars)")
+                            pass
                             for j, string_longa in enumerate(strings_longas.head(3)):
-                                print(f"       {j+1}. {string_longa[:100]}...")
+                                pass
                         
-                        print(f"   ✅ Convertido para STRING")
                         
                     except Exception as e:
                         problemas.append(f"Coluna {col}: Erro na conversão STRING - {str(e)}")
-                        print(f"   ❌ Erro na conversão STRING: {e}")
     
-    print("\n" + "="*50)
     if problemas:
-        print(f"⚠️ PROBLEMAS ENCONTRADOS ({len(problemas)}):")
+        pass
         for i, problema in enumerate(problemas, 1):
-            print(f"   {i}. {problema}")
+            pass
     else:
-        print("✅ TODOS OS TIPOS VALIDADOS COM SUCESSO!")
-    print("="*50)
+        pass
     
     return df_validado, problemas
 
@@ -1032,7 +962,6 @@ def importar_para_sqlserver(df, autor):
             return {"sucesso": False, "mensagem": "🚫 Erro de conexão com SQL Server."}
 
         cursor = conn.cursor()
-        print("✅ Conectado ao SQL Server.")
 
         # 🔍 Verificar estrutura da tabela
         estrutura_ok, colunas_identity_ou_erro = verificar_estrutura_tabela(cursor)
@@ -1068,22 +997,21 @@ def importar_para_sqlserver(df, autor):
         df_filtrado = df[colunas_validas].copy()
 
         if 'TotalAmount_USD_ValorTotal_USD' in df_filtrado.columns:
-            print("💰 Processando valores decimais...")
+            pass
             df_filtrado['TotalAmount_USD_ValorTotal_USD'] = processar_valores_decimais(df_filtrado['TotalAmount_USD_ValorTotal_USD'])
 
         # 🧪 Validar tipos
         df_validado, problemas_validacao = validar_tipos_dados(df_filtrado, colunas_validas)
         if problemas_validacao:
-            print("⚠️ Problemas de validação (seguindo com importação):")
+            pass
             for problema in problemas_validacao:
-                print(f"   - {problema}")
+                pass
 
         # 🧾 Montar query de INSERT
         colunas_str = ", ".join([f"[{col}]" for col in colunas_validas])
         placeholders = ", ".join(["?" for _ in colunas_validas])
         insert_query = f"INSERT INTO [dbo].[Desembarque] ({colunas_str}) VALUES ({placeholders})"
 
-        print(f"⚙️ Preparado para inserir {len(df_validado)} registros...")
         total_inseridos = 0
         erros = []
 
@@ -1107,10 +1035,10 @@ def importar_para_sqlserver(df, autor):
                 total_inseridos += 1
 
                 if total_inseridos % 100 == 0:
-                    print(f"📥 {total_inseridos} registros inseridos...")
+                    pass
 
             except Exception as err:
-                print(f"\n❌ ERRO NO REGISTRO #{index + 1}: {err}")
+                pass
                 erros.append({
                     "registro": index + 1,
                     "erro": str(err),
@@ -1122,9 +1050,6 @@ def importar_para_sqlserver(df, autor):
         cursor.close()
         conn.close()
 
-        print(f"\n✅ Inserção finalizada!")
-        print(f"📊 Total inserido: {total_inseridos}")
-        print(f"⚠️ Com erro: {len(erros)}")
 
         return {
             "sucesso": True,
@@ -1134,7 +1059,7 @@ def importar_para_sqlserver(df, autor):
         }
 
     except Exception as e:
-        print(f"❌ Erro crítico na importação: {e}")
+        pass
         traceback.print_exc()
         return {"sucesso": False, "mensagem": f"Erro durante a importação: {str(e)}"}
 
@@ -1159,7 +1084,7 @@ def authenticate_user():
         return '', 200
 
     try:
-        print(f"🔐 Iniciando autenticação com Active Directory...")
+        pass
 
         if not request.is_json:
             return jsonify({"status": "error", "message": "Content-Type deve ser application/json"}), 400
@@ -1174,7 +1099,6 @@ def authenticate_user():
         if not username or not password:
             return jsonify({"status": "error", "message": "Username e password são obrigatórios"}), 400
 
-        print(f"➡️ Tentando autenticar usuário: {username}")
 
         resultado = authenticate_user_in_ad(username, password)
 
@@ -1182,7 +1106,7 @@ def authenticate_user():
         return jsonify(resultado), status_code
 
     except Exception as e:
-        print(f"❌ Erro interno no authenticate_user: {e}")
+        pass
         traceback.print_exc()
         return jsonify({"status": "error", "message": "Erro interno"}), 500
     
@@ -1213,9 +1137,8 @@ def obter_filtros_desembarque():
                 ORDER BY COLUMN_NAME
             """)
             colunas_existentes = [row[0] for row in cursor.fetchall()]
-            print(f"🔍 Colunas existentes na tabela Desembarque: {colunas_existentes}")
         except Exception as col_error:
-            print(f"❌ Erro ao verificar colunas: {col_error}")
+            pass
 
         # Campos que usam dropdown simples - usando nomes corretos da tabela
         campos_dropdown = [
@@ -1237,14 +1160,13 @@ def obter_filtros_desembarque():
         
         # Filtrar apenas campos que existem na tabela  
         campos_busca_inteligente = [campo for campo in campos_busca_inteligente_todos if campo in colunas_existentes]
-        print(f"🔍 Campos busca inteligente válidos: {campos_busca_inteligente}")
 
         resultado = {}
 
         # Processar campos com dropdown simples
         for campo in campos_dropdown:
             try:
-                print(f"🔍 Processando dropdown: {campo}")
+                pass
                 cursor.execute(
                     f"""
                     SELECT DISTINCT {campo}
@@ -1259,16 +1181,15 @@ def obter_filtros_desembarque():
                     if v and str(v).strip() not in ("", "NULL")
                 ]
                 resultado[campo] = sorted(valores, key=lambda x: str(x).upper())
-                print(f"✅ Dropdown {campo}: {len(resultado[campo])} valores encontrados")
             except Exception as campo_erro:
-                print(f"❌ Erro no dropdown {campo}: {campo_erro}")
+                pass
                 # Se der erro em um campo, continuar com os outros
                 resultado[campo] = []
 
         # Processar campos com busca inteligente (retornar todos os valores para filtrar no frontend)
         for campo in campos_busca_inteligente:
             try:
-                print(f"🔍 Processando campo: {campo}")
+                pass
                 cursor.execute(
                     f"""
                     SELECT DISTINCT {campo}
@@ -1283,9 +1204,8 @@ def obter_filtros_desembarque():
                     if v and str(v).strip() not in ("", "NULL")
                 ]
                 resultado[campo] = sorted(valores, key=lambda x: str(x).upper())
-                print(f"✅ Campo {campo}: {len(resultado[campo])} valores encontrados")
             except Exception as campo_erro:
-                print(f"❌ Erro no campo {campo}: {campo_erro}")
+                pass
                 # Se der erro em um campo, continuar com os outros
                 resultado[campo] = []
 
@@ -1296,8 +1216,6 @@ def obter_filtros_desembarque():
 
     except Exception as e:
         import traceback
-        print(f"❌ Erro ao obter filtros de desembarque: {e}")
-        print(traceback.format_exc())
         return jsonify({"status": "error", "message": str(e)}), 500
 
 
@@ -1400,19 +1318,14 @@ def buscar_desembarques():
         ORDER BY Created DESC
         """
 
-        print(f"🔍 Debug - arquivo_referencia: {arquivo_referencia}")
-        print(f"🔍 Debug - Filtros recebidos: {filtros}")
-        print(f"🔍 Debug - Query: {query}")
-        print(f"🔍 Debug - Parametros: {parametros}")
         
         cursor.execute(query, parametros)
         rows = cursor.fetchall()
         col_names = [desc[0] for desc in cursor.description]
         data = [dict(zip(col_names, row)) for row in rows]
         
-        print(f"📊 Total de registros encontrados: {len(data)}")
         if len(data) > 0:
-            print(f"📋 Primeiro registro: {data[0]}")
+            pass
         
         cursor.close()
         conn.close()
@@ -1422,7 +1335,7 @@ def buscar_desembarques():
         return jsonify({"status": "error", "message": str(e)})
 
     except Exception as e:
-        print(f"❌ Erro ao buscar desembarques: {e}")
+        pass
         import traceback
         traceback.print_exc()
         return jsonify({"status": "error", "message": str(e)})
@@ -1443,9 +1356,6 @@ def consultar_desembarques():
        conn = get_sql_connection()
        cursor = conn.cursor()
 
-       print("\n" + "="*80, flush=True)
-       print("🔍 CONSULTA DE DESEMBARQUE - Tabela conferencia", flush=True)
-       print("="*80, flush=True)
 
        # Mapear filtros do frontend para nomes corretos da tabela conferencia
        filtros_frontend_para_db = {
@@ -1469,12 +1379,9 @@ def consultar_desembarques():
            if valor:
                where_clauses.append(f"[{campo_db}] LIKE ?")
                parametros.append(f"%{valor}%")
-               print(f"📋 Filtro: {campo_frontend} ({campo_db}) = {valor}", flush=True)
 
        where_sql = "WHERE " + " AND ".join(where_clauses) if where_clauses else ""
 
-       print(f"📊 WHERE clauses: {where_clauses}", flush=True)
-       print(f"📊 Parâmetros: {parametros}", flush=True)
 
        query = f"""
        SELECT 
@@ -1513,15 +1420,13 @@ def consultar_desembarques():
        columns = [desc[0] for desc in cursor.description]
        data = [dict(zip(columns, row)) for row in rows]
 
-       print(f"✅ Registros encontrados: {len(data)}", flush=True)
        if len(data) > 0:
-           print(f"📋 Primeiro registro: {list(data[0].keys())[:5]}...", flush=True)
-       print("="*80 + "\n", flush=True)
+           pass
 
        return jsonify({"status": "success", "data": data})
 
    except Exception as e:
-       print(f"Erro ao consultar desembarques: {e}")
+       pass
        traceback.print_exc()
        return jsonify({"status": "error", "message": str(e)}), 500
 
@@ -1585,7 +1490,7 @@ def obter_filtros_consulta_desembarque():
                 ]
                 resultado[campo_frontend] = sorted(valores, key=lambda x: str(x).upper())
             except Exception as e:
-                print(f"❌ Erro no campo dropdown {campo_db}: {e}", flush=True)
+                pass
                 resultado[campo_frontend] = []
 
         # Processar campos com busca inteligente
@@ -1605,7 +1510,7 @@ def obter_filtros_consulta_desembarque():
                 ]
                 resultado[campo_frontend] = sorted(valores, key=lambda x: str(x).upper())
             except Exception as e:
-                print(f"❌ Erro no campo busca {campo_db}: {e}", flush=True)
+                pass
                 resultado[campo_frontend] = []
 
         cursor.close()
@@ -1615,8 +1520,6 @@ def obter_filtros_consulta_desembarque():
 
     except Exception as e:
         import traceback
-        print(f"❌ Erro ao obter filtros de consulta de desembarque: {e}")
-        print(traceback.format_exc())
         return jsonify({"status": "error", "message": str(e)}), 500
     
 @app.route('/api/R2D/consulta', methods=['GET'])
@@ -1635,9 +1538,6 @@ def consultar_r2d():
         conn = get_sql_connection()
         cursor = conn.cursor()
 
-        print(f"\n{'='*80}", flush=True)
-        print(f"[R2D CONSULTA] - Query String Completa: {request.query_string.decode()}", flush=True)
-        print(f"{'='*80}", flush=True)
 
         # Mapear filtros para campos da tabela
         filtros = {
@@ -1653,7 +1553,6 @@ def consultar_r2d():
             "data_fim": request.args.get("data_fim"),
         }
 
-        print(f"[Filtros recebidos: {filtros}]", flush=True)
 
         where_clauses = []
         parametros = []
@@ -1689,21 +1588,16 @@ def consultar_r2d():
         data_fim = converter_data_para_iso(data_fim)
         
         # DEBUG: Mostrar o que foi recebido
-        print(f"\n[R2D CONSULTA] Data Inicio Original: {filtros.get('data_inicio')} -> Convertida: {data_inicio}", flush=True)
-        print(f"[R2D CONSULTA] Data Fim Original: {filtros.get('data_fim')} -> Convertida: {data_fim}", flush=True)
         
         if data_inicio and data_fim:
             where_clauses.append("DATA_CRIACAO_PO BETWEEN ? AND ?")
             parametros.extend([data_inicio, data_fim])
-            print(f"[Filtro BETWEEN aplicado: {data_inicio} a {data_fim}]", flush=True)
         elif data_inicio:
             where_clauses.append("DATA_CRIACAO_PO >= ?")
             parametros.append(data_inicio)
-            print(f"[Filtro >= aplicado: {data_inicio}]", flush=True)
         elif data_fim:
             where_clauses.append("DATA_CRIACAO_PO <= ?")
             parametros.append(data_fim)
-            print(f"[Filtro <= aplicado: {data_fim}]", flush=True)
 
         where_sql = "WHERE " + " AND ".join(where_clauses) if where_clauses else ""
 
@@ -1761,21 +1655,14 @@ def consultar_r2d():
         columns = [desc[0] for desc in cursor.description]
         data = [dict(zip(columns, row)) for row in rows]
         
-        print(f"[R2D CONSULTA] Total de registros encontrados: {len(data)}", flush=True)
         if len(data) == 0:
-            print(f"[R2D CONSULTA] Query: {query}", flush=True)
-            print(f"[R2D CONSULTA] Parametros: {parametros}", flush=True)
-            print(f"[R2D CONSULTA] Where clauses: {where_clauses}", flush=True)
+            pass
 
         return jsonify({"status": "success", "data": data})
 
     except Exception as e:
-        print(f"\n[R2D CONSULTA] ERRO ao consultar R2D!", flush=True)
-        print(f"Tipo do erro: {type(e).__name__}", flush=True)
-        print(f"Mensagem: {str(e)}", flush=True)
-        print(f"Full traceback:")
+        pass
         traceback.print_exc()
-        print(f"{'='*80}\n")
         return jsonify({"status": "error", "message": f"{type(e).__name__}: {str(e)}"}), 500
 
     finally:
@@ -1859,8 +1746,6 @@ def obter_filtros_consulta_r2d():
 
     except Exception as e:
         import traceback
-        print(f"❌ Erro ao obter filtros de consulta R2D: {e}")
-        print(traceback.format_exc())
         return jsonify({"status": "error", "message": str(e)}), 500
 
 @app.route("/api/desembarque/status", methods=["GET", "OPTIONS"])
@@ -1914,7 +1799,7 @@ def status_importacao():
                 else:
                     status = {"total_registros": 0, "ultima_importacao": None, "total_autores": 0}
             except Exception as qe:
-                print(f"❌ Erro ao buscar status para arquivo '{arquivo_referencia}': {qe}")
+                pass
                 status = {"total_registros": 0, "ultima_importacao": None, "total_autores": 0}
         
         cursor.close()
@@ -1926,7 +1811,7 @@ def status_importacao():
         }), 200
         
     except Exception as e:
-        print(f"❌ Erro ao buscar status: {e}")
+        pass
         return jsonify({"status": "error", "message": "Erro interno do servidor"}), 500
 
 
@@ -1956,7 +1841,7 @@ def listar_origens_desembarque():
         origens = [row[0] for row in cursor.fetchall() if row[0]]
         return jsonify({"status": "success", "origens": origens})
     except Exception as e:
-        print(f"❌ Erro ao listar origens: {e}")
+        pass
         return jsonify({"status": "error", "message": str(e)}), 500
 
 
@@ -1986,7 +1871,7 @@ def listar_destinos_desembarque():
         destinos = [row[0] for row in cursor.fetchall() if row[0]]
         return jsonify({"status": "success", "destinos": destinos})
     except Exception as e:
-        print(f"❌ Erro ao listar destinos: {e}")
+        pass
         return jsonify({"status": "error", "message": str(e)}), 500
 
 @app.route("/api/desembarque/files", methods=["GET", "OPTIONS"])
@@ -2008,12 +1893,10 @@ def get_available_files():
         # 🆕 Debug: Verificar total de registros na tabela Desembarque
         cursor.execute("SELECT COUNT(*) FROM [dbo].[Desembarque]")
         total_registros = cursor.fetchone()[0]
-        print(f"📊 Total de registros na tabela Desembarque: {total_registros}")
 
         # 🆕 Debug: Verificar registros com arquivo_referencia
         cursor.execute("SELECT COUNT(*) FROM [dbo].[Desembarque] WHERE [arquivo_referencia] IS NOT NULL")
         total_com_arquivo = cursor.fetchone()[0]
-        print(f"📊 Registros com arquivo_referencia: {total_com_arquivo}")
 
         # 🆕 REMOVER FILTRO DE transfer_status - buscar TODOS os arquivos
         cursor.execute("""
@@ -2028,7 +1911,6 @@ def get_available_files():
             ORDER BY MAX([Created]) DESC
         """)
         rows_files = cursor.fetchall()
-        print(f"📊 Arquivos únicos encontrados: {len(rows_files)}")
         available_files = []
         
         for row in rows_files:
@@ -2089,9 +1971,8 @@ def get_available_files():
         cursor.close()
         conn.close()
 
-        print(f"📊 Arquivos/Registros encontrados: {len(available_files)}")
         for f in available_files:
-            print(f"   📁 {f['display']} (value: {f['value']}, total: {f.get('total', 0)})")
+            pass
 
         return jsonify({
             "status": "success",
@@ -2100,7 +1981,7 @@ def get_available_files():
         }), 200
 
     except Exception as e:
-        print(f"❌ Erro ao buscar arquivos disponíveis: {e}")
+        pass
         import traceback
         traceback.print_exc()
         return jsonify({"status": "error", "message": "Erro interno do servidor"}), 500
@@ -2113,7 +1994,7 @@ def upload_excel():
        try:
            is_auth, error_msg = verify_authentication()
            if not is_auth:
-               print(f"❌ Falha na autenticação: {error_msg}")
+               pass
                return jsonify({"status": "error", "message": error_msg}), 401
 
            # Obter dados do usuário da sessão ou headers
@@ -2128,29 +2009,27 @@ def upload_excel():
                if user:
                    username = user.get('username')
                    user_type = user.get('user_type')
-                   print(f"🔐 Autenticado via token: {username} ({user_type})")
 
            # Fallback para headers antigos se token não funcionou
            if not username:
                username = request.headers.get('x-user-name')
                user_type = request.headers.get('x-user-type')
                if username:
-                   print(f"🔐 Autenticado via headers: {username} ({user_type})")
+                   pass
 
            # Verificar se conseguiu obter dados do usuário
            if not username or not user_type:
-               print("❌ Não foi possível obter dados do usuário")
+               pass
                return jsonify({"status": "error", "message": "Dados de usuário não encontrados"}), 401
 
            # Verificar se é admin
            if user_type != 'ADMIN':
-               print(f"❌ Usuário {username} não é ADMIN: {user_type}")
+               pass
                return jsonify({"status": "error", "message": "Admin access required"}), 403
 
-           print(f"✅ Upload autorizado para ADMIN: {username}")
 
        except Exception as e:
-           print(f"❌ Erro na verificação de autenticação: {e}")
+           pass
            traceback.print_exc()
            return jsonify({"status": "error", "message": "Erro na verificação de autenticação"}), 500
 
@@ -2161,9 +2040,7 @@ def upload_excel():
    cursor = None
 
    try:
-       print("📤 Processando upload de arquivo Excel...")
-       print(f"📋 Content-Type: {request.content_type}")
-       print(f"📋 Files: {list(request.files.keys())}")
+       pass
 
        # Verificar se existe arquivo no request
        if 'arquivo_excel' not in request.files:
@@ -2175,11 +2052,9 @@ def upload_excel():
        if not arquivo or arquivo.filename == '':
            return jsonify({"status": "error", "message": "Nenhum arquivo selecionado"}), 400
 
-       print(f"📄 Arquivo recebido: {arquivo.filename}")
 
        # Preparar nome do arquivo em lowercase para validações
        nome_arquivo = arquivo.filename.lower()
-       print(f"📎 Extensão: {nome_arquivo.split('.')[-1]}")
 
        # Validar extensão do arquivo
        extensoes_validas = ['.xlsx', '.xlsb', '.xls']
@@ -2189,18 +2064,15 @@ def upload_excel():
                "message": f"Arquivo deve ter uma das extensões: {', '.join(extensoes_validas)}"
            }), 400
 
-       print(f"📊 Tamanho do arquivo: {getattr(arquivo, 'content_length', 'N/A')} bytes")
 
        # Salvar arquivo temporariamente com extensão original
        try:
            file_extension = os.path.splitext(arquivo.filename)[1]
-           print(f"📎 Extensão original: {file_extension}")
            with tempfile.NamedTemporaryFile(delete=False, suffix=file_extension) as tmp_file:
                arquivo.save(tmp_file.name)
                tmp_file_path = tmp_file.name
-           print(f"📁 Arquivo salvo temporariamente em: {tmp_file_path}")
        except Exception as e:
-           print(f"❌ Erro ao salvar arquivo temporário: {e}")
+           pass
            traceback.print_exc()
            return jsonify({"status": "error", "message": f"Erro ao salvar arquivo temporário: {str(e)}"}), 500
 
@@ -2232,20 +2104,18 @@ def upload_excel():
            if 'Created' in df_processado.columns:
                df_processado['Created'] = import_timestamp
        except Exception as e:
-           print(f"⚠️ Não foi possível adicionar timestamp ao arquivo_referencia: {e}")
+           pass
            arquivo_referencia_full = arquivo.filename
        divergencias = resultado_processamento.get("divergencias", [])
 
        # Debug final: verificar valores do SPN após processamento
        if 'SPN' in df_processado.columns and len(df_processado) > 0:
            spn_samples = df_processado['SPN'].head(3).tolist()
-           print(f"🔍 DEBUG FINAL - Primeiros 3 valores de SPN após processamento: {spn_samples}")
            for i, spn in enumerate(spn_samples):
-               print(f"   SPN[{i}]: '{spn}' (tipo: {type(spn)}, len: {len(str(spn))})")
+               pass
 
-       print(f"\n=== 👀 Preview dos dados processados ({len(df_processado)} registros) ===")
        try:
-           print(df_processado.head())
+           pass
        except Exception:
            pass
 
@@ -2256,7 +2126,6 @@ def upload_excel():
        cursor = conn.cursor()
 
        cols = list(df_processado.columns)
-       print(f"📋 Colunas para inserção: {cols}")
        insert_sql = f"INSERT INTO Desembarque ({', '.join(cols)}) VALUES ({', '.join(['?'] * len(cols))})"
 
        total_inseridos = 0
@@ -2283,7 +2152,7 @@ def upload_excel():
                        id_val = str(id_raw).strip()
                        # Truncar Id para 50 caracteres (limite do campo no banco)
                        if len(id_val) > 50:
-                           print(f"⚠️ ID truncado de {len(id_val)} para 50 chars: {id_val}")
+                           pass
                            id_val = id_val[:50]
 
                if id_val:
@@ -2311,7 +2180,7 @@ def upload_excel():
                cursor.execute(insert_sql, tuple(tup_list))
                total_inseridos += 1
            except Exception as row_e:
-               print(f"❌ Erro ao inserir linha com ID '{id_val}': {row_e}")
+               pass
                traceback.print_exc()
                # continuar processando as próximas linhas
                continue
@@ -2320,7 +2189,7 @@ def upload_excel():
        try:
            conn.commit()
        except Exception as commit_e:
-           print(f"❌ Erro no commit das inserções: {commit_e}")
+           pass
            traceback.print_exc()
 
        # Se houver duplicados, gerar um excel com a lista de PRs não importadas
@@ -2335,7 +2204,7 @@ def upload_excel():
                dup_df.to_excel(dup_path, index=False)
                duplicates_file_name = os.path.basename(dup_path)
            except Exception as dup_e:
-               print(f"❌ Erro ao gerar arquivo de duplicados: {dup_e}")
+               pass
                traceback.print_exc()
 
        # Resposta de sucesso com informações de importação
@@ -2355,11 +2224,10 @@ def upload_excel():
            response_data["total_divergencias"] = len(divergencias)
            response_data["warning"] = f"Arquivo processado com sucesso, mas foram encontradas {len(divergencias)} divergências. Verifique os dados."
 
-       print(f"✅ Upload concluído com sucesso: {total_inseridos} registros (inseridos), {total_duplicados} duplicados")
        return jsonify(response_data), 200
 
    except Exception as e:
-       print(f"❌ Erro no processamento: {e}")
+       pass
        traceback.print_exc()
        return jsonify({"status": "error", "message": f"Erro no processamento: {str(e)}"}), 500
 
@@ -2380,9 +2248,8 @@ def upload_excel():
        try:
            if tmp_file_path and os.path.exists(tmp_file_path):
                os.unlink(tmp_file_path)
-               print("🗑️ Arquivo temporário removido")
        except Exception as e:
-           print(f"⚠️ Erro ao remover arquivo temporário: {e}")
+           pass
         
 
 
@@ -2397,7 +2264,7 @@ def download_duplicates_file(filename):
         # Usar send_from_directory para servir o arquivo
         return send_from_directory(temp_dir, filename, as_attachment=True)
     except Exception as e:
-        print(f"❌ Erro ao servir arquivo de duplicados: {e}")
+        pass
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
 
@@ -2421,17 +2288,13 @@ def ler_arquivo_excel(caminho_arquivo):
        # Debug: mostrar primeiros valores da coluna SPN (coluna F = índice 5)
        if len(df.columns) > 5:
            spn_values = df.iloc[:5, 5].tolist()
-           print(f"🔍 Primeiros 5 valores da coluna F (SPN): {spn_values}")
            for i, val in enumerate(spn_values):
-               print(f"   SPN[{i}]: '{val}' (tipo: {type(val)})")
+               pass
        
-       print(f"📊 Arquivo carregado: {len(df)} linhas, {len(df.columns)} colunas")
-       print(f"📋 Colunas encontradas: {list(df.columns)}")
-       print("✅ Coluna F (SPN) forçada como string via converters para preservar zeros à esquerda")
        
        return df
    except Exception as e:
-       print(f"❌ Erro ao ler arquivo Excel: {e}")
+       pass
        return None
 
 
@@ -2467,12 +2330,9 @@ def processar_excel_desembarque(df, username, nome_arquivo):
            'TotalAmount_USD_Valor'                  # L (11)
        ]
        
-       print("🔄 Processando Excel por posição de coluna (A-L), ignorando headers...")
-       print(f"📊 DataFrame original: {df.shape[0]} linhas x {df.shape[1]} colunas")
        
        # Ignorar a primeira linha (headers), processar a partir da linha 2
        df_sem_header = df.iloc[1:].reset_index(drop=True)
-       print(f"📊 DataFrame sem header: {df_sem_header.shape[0]} linhas x {df_sem_header.shape[1]} colunas")
        
        # Criar DataFrame processado
        df_processado = pd.DataFrame()
@@ -2481,10 +2341,8 @@ def processar_excel_desembarque(df, username, nome_arquivo):
        for idx, col_nome in enumerate(colunas_por_posicao):
            if idx < df_sem_header.shape[1]:
                df_processado[col_nome] = df_sem_header.iloc[:, idx]
-               print(f"✅ Mapeado coluna {idx} ({chr(65+idx)}) → {col_nome}")
            else:
                df_processado[col_nome] = None
-               print(f"⚠️ Coluna {idx} ({chr(65+idx)}) não encontrada - preenchendo com NULL")
        
        # Garantir que SPN seja mantido como string (preservar zeros à esquerda)
        if 'SPN' in df_processado.columns:
@@ -2510,20 +2368,18 @@ def processar_excel_desembarque(df, username, nome_arquivo):
            
            # Aplicar processamento personalizado
            df_processado['SPN'] = df_processado['SPN'].apply(processar_spn)
-           print("✅ SPN processado com preservação de zeros à esquerda")
            
            # Debug detalhado: mostrar alguns valores de SPN processados
            spn_samples = df_processado['SPN'].head(5).tolist()
-           print(f"🔍 Amostras de SPN processados: {spn_samples}")
            for i, spn in enumerate(spn_samples):
-               print(f"   SPN[{i}]: '{spn}' (tipo: {type(spn)}, tamanho: {len(spn)})")
+               pass
            
            # Verificação adicional para zeros à esquerda
            spn_with_zeros = df_processado[df_processado['SPN'].str.startswith('0', na=False)]['SPN'].head(5).tolist()
            if spn_with_zeros:
-               print(f"✅ SPNs com zeros à esquerda preservados: {spn_with_zeros}")
+               pass
            else:
-               print("⚠️ Nenhum SPN com zeros à esquerda encontrado após processamento")
+               pass
        
        # Calcular valor unitário automaticamente
        df_processado['UnitValue_USD_ValorUnitario'] = None
@@ -2610,10 +2466,8 @@ def processar_excel_desembarque(df, username, nome_arquivo):
        # Remover linhas completamente vazias
        df_processado = df_processado.dropna(how='all')
        
-       print(f"✅ Processamento concluído: {len(df_processado)} registros válidos")
-       print(f"📄 Arquivo de referência: {nome_arquivo}")
        if divergencias:
-           print(f"⚠️ Encontradas {len(divergencias)} divergências")
+           pass
        
        return {
            "sucesso": True,
@@ -2623,7 +2477,7 @@ def processar_excel_desembarque(df, username, nome_arquivo):
        }
        
    except Exception as e:
-       print(f"❌ Erro no processamento do Excel: {e}")
+       pass
        import traceback
        traceback.print_exc()
        return {
@@ -2776,7 +2630,7 @@ def importar_para_sqlserver_desembarque(df, username):
                # Debug específico para SPN
                spn_value = row['SPN']
                if registros_inseridos < 3:  # Debug apenas nos primeiros registros
-                   print(f"🔍 DEBUG SPN - Registro {registros_inseridos + 1}: '{spn_value}' (tipo: {type(spn_value)})")
+                   pass
                
                valores = [
                    row.get('IdBusinessIntelligence', ''),
@@ -2809,7 +2663,6 @@ def importar_para_sqlserver_desembarque(df, username):
                
            except Exception as e:
                erro_msg = f"Erro ao inserir registro da linha {index + 2}: {str(e)}"
-               print(f"❌ {erro_msg}")
                erros_insercao.append(erro_msg)
                continue
        
@@ -2817,8 +2670,6 @@ def importar_para_sqlserver_desembarque(df, username):
        cursor.close()
        conn.close()
        
-       print(f"✅ Importação concluída: {registros_inseridos} registros inseridos")
-       print(f"📄 Arquivo de referência: {df.iloc[0]['arquivo_referencia'] if not df.empty else 'N/A'}")
        
        mensagem = f"Importação realizada com sucesso! {registros_inseridos} registros inseridos."
        if erros_insercao:
@@ -2832,7 +2683,7 @@ def importar_para_sqlserver_desembarque(df, username):
        }
        
    except Exception as e:
-       print(f"❌ Erro na importação: {e}")
+       pass
        traceback.print_exc()
        return {"sucesso": False, "mensagem": f"Erro na importação: {str(e)}"}
    
@@ -2863,7 +2714,6 @@ def get_vessels():
         
     except Exception as e:
         import traceback
-        print(f"❌ Erro ao buscar navios:\n{traceback.format_exc()}")
         return jsonify({"status": "error", "message": str(e)}), 500
 
 
@@ -2893,7 +2743,6 @@ def get_departments():
         
     except Exception as e:
         import traceback
-        print(f"❌ Erro ao buscar departamentos:\n{traceback.format_exc()}")
         return jsonify({"status": "error", "message": str(e)}), 500
 
 
@@ -2933,8 +2782,7 @@ def inserir_desembarque_individual():
 
         # Se for objeto (dict), converter para array na ordem correta
         if isinstance(data, dict):
-            print("📦 Recebido como OBJETO - convertendo para array...")
-            print(f"🔍 Chaves recebidas: {list(data.keys())}")
+            pass
             
             # Mapeamento de nomes alternativos
             mapeamento = {
@@ -2964,14 +2812,12 @@ def inserir_desembarque_individual():
                         break
                 valores.append(valor)
             
-            print(f"📋 Valores mapeados: {valores}")
         elif isinstance(data, list):
-            print("📦 Recebido como ARRAY...")
+            pass
             valores = list(data) + [None] * (len(campos) - len(data))  # Garante tamanho
         else:
             return jsonify({'status': 'error', 'message': 'Formato inválido. Envie um objeto ou array.'}), 400
 
-        print(f"📋 Valores recebidos: {valores}")
 
         # Validação de campos obrigatórios (UnitValue_USD_ValorUnitario, Created e arquivo_referencia são calculados/gerados automaticamente)
         campos_opcionais = ["UnitValue_USD_ValorUnitario", "Created", "arquivo_referencia"]
@@ -3036,7 +2882,7 @@ def inserir_desembarque_individual():
             else:
                 valores[11] = 0.0
         except Exception as e:
-            print(f"⚠️ Erro ao calcular valor unitário: {e}")
+            pass
             valores[11] = 0.0
 
         # Sempre gera o timestamp Created no backend (UTC-3)
@@ -3047,7 +2893,6 @@ def inserir_desembarque_individual():
         # 🆕 GERAR arquivo_referencia ÚNICO (formato: INDIVIDUAL-{timestamp})
         arquivo_ref = f"INDIVIDUAL-{br_time.strftime('%Y%m%d-%H%M%S')}"
         valores[13] = arquivo_ref
-        print(f"📂 arquivo_referencia gerado: {arquivo_ref}")
 
         # Gerar ID único no formato: #NavioDestino-SPN-NavioOrigem-Depto-PRTM/Ano
         try:
@@ -3059,9 +2904,8 @@ def inserir_desembarque_individual():
             ano = br_time.year
             
             id_gerado = f"#{navio_destino}-{spn}-{navio_origem}-{depto}-{pr_tm}/{ano}"
-            print(f"🆔 ID gerado: {id_gerado}")
         except Exception as e:
-            print(f"❌ Erro ao gerar ID: {e}")
+            pass
             id_gerado = f"#AUTO-{br_time.strftime('%Y%m%d%H%M%S')}"
 
         # Inserir ID no início da lista
@@ -3078,7 +2922,6 @@ def inserir_desembarque_individual():
             pr_value = valores[8]  # PRNumberTMMaster_Nome agora está no índice 8
             if pr_value is not None and str(pr_value).strip() != '':
                 pr_norm = str(pr_value).strip()
-                print(f"[🔍 VALIDAÇÃO PR] Verificando se PR '{pr_norm}' já existe...")
                 cursor.execute("""
                     SELECT TOP 1 Id, transfer_status FROM [dbo].[Desembarque]
                     WHERE LTRIM(RTRIM(ISNULL(PRNumberTMMaster_Nome, ''))) = LTRIM(RTRIM(?))
@@ -3086,14 +2929,14 @@ def inserir_desembarque_individual():
                 """, (pr_norm,))
                 existing = cursor.fetchone()
                 if existing:
-                    print(f"[❌ DUPLICADO] PR '{pr_norm}' já existe no registro ID: {existing[0]}")
+                    pass
                     cursor.close()
                     conn.close()
                     return jsonify({'status': 'error', 'message': f'PR TM Master {pr_norm} já existe na base (ID: {existing[0]}). Registro não importado.'}), 409
                 else:
-                    print(f"[✅ OK] PR '{pr_norm}' não existe ou já foi processado. Permitindo inserção.")
+                    pass
         except Exception as e:
-            print(f"❌ Erro durante verificação pré-inserção PR: {e}")
+            pass
             traceback.print_exc()
 
         # Montar query de INSERT com os campos corretos
@@ -3101,9 +2944,6 @@ def inserir_desembarque_individual():
         placeholders = ", ".join(["?" for _ in campos])
         insert_sql = f"INSERT INTO [dbo].[Desembarque] ({colunas_str}) VALUES ({placeholders})"
 
-        print(f"[SQL] INSERT Desembarque:")
-        print(f"  Campos: {campos}")
-        print(f"  Valores: {valores}")
 
         cursor.execute(insert_sql, valores)
         
@@ -3120,10 +2960,6 @@ def inserir_desembarque_individual():
         insert_embarque_sql = f"INSERT INTO [dbo].[embarque] ({colunas_embarque_str}, [status_final]) VALUES ({placeholders_embarque}, ?)"
         valores_embarque.append("Pendente")
         
-        print(f"[SQL] INSERT embarque:")
-        print(f"  Campos: {campos_embarque}")
-        print(f"  Valores: {valores_embarque[:3]}...")  # Mostrar apenas primeiros 3 valores
-        print(f"  Status: Pendente")
         
         cursor.execute(insert_embarque_sql, valores_embarque)
         
@@ -3134,7 +2970,7 @@ def inserir_desembarque_individual():
         return jsonify({'status': 'success', 'message': 'Registro inserido com sucesso em Desembarque e Embarque.'}), 200
 
     except Exception as e:
-        print(f"❌ Erro ao inserir registro individual:\n{traceback.format_exc()}")
+        pass
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
 
@@ -3222,47 +3058,30 @@ def obter_filtros_desembarque_consulta():
 
    except Exception as e:
        import traceback
-       print(f"❌ Erro ao obter filtros de desembarque consulta: {e}")
-       print(traceback.format_exc())
        return jsonify({"status": "error", "message": str(e)}), 500
 
 @app.route("/api/desembarque/confirmar", methods=["POST"])
 def inserir_conferencia():
     """Confirmar/transferir registro de desembarque para conferência"""
     
-    print("\n" + "="*100)
-    print("🎯 ENDPOINT /api/desembarque/confirmar CHAMADO!")
-    print("="*100)
-    print(f"📋 METHOD: {request.method}")
-    print(f"📋 URL: {request.url}")
-    print(f"📋 HEADERS:")
     for key, value in request.headers:
-        print(f"   {key}: {value}")
-    print("="*100)
+        pass
     
     # Verificar autenticação
-    print("🔐 Verificando autenticação...")
     is_auth, error_msg = verify_authentication()
     if not is_auth:
-        print(f"❌ AUTENTICAÇÃO FALHOU: {error_msg}")
+        pass
         return jsonify({"status": "error", "message": error_msg}), 401
     
-    print("✅ Autenticação OK - Usuário autenticado!")
     
     try:
-        print("📦 Tentando obter dados do request...")
+        pass
         data = request.get_json()
-        print(f"📦 request.get_json() retornou: {type(data)} - Tamanho: {len(data) if data else 0}")
         
         if not data:
-            print("⚠️ ERRO: Nenhum dado recebido no request!")
+            pass
             return jsonify({"status": "error", "message": "Nenhum dado recebido"}), 400
 
-        print(f"\n[📥 Dados recebidos] {data}")
-        print(f"[🔍 DEBUG] motivo_padrao recebido: '{data.get('motivo_padrao')}'")
-        print(f"[🔍 DEBUG] Keys do payload: {list(data.keys())}")
-        print(f"[🕐 DEBUG DATETIME] data_inicio_quarentena RAW: {data.get('data_inicio_quarentena')}")
-        print(f"[🕐 DEBUG DATETIME] data_fim_quarentena RAW: {data.get('data_fim_quarentena')}")
 
         conn = get_sql_connection()
         if not conn:
@@ -3283,7 +3102,6 @@ def inserir_conferencia():
 
         # Captura status_final conforme a lógica de motivo
         motivo_padrao = data.get("motivo_padrao") or ""
-        print(f"[🔍 DEBUG] motivo_padrao processado: '{motivo_padrao}'")
         
         motivos_validos = [
             "Estoque mínimo a bordo requerido",
@@ -3299,7 +3117,6 @@ def inserir_conferencia():
         else:
             status_final = motivo_padrao or data.get("status_final") or "Aguardando Conferência Base"
 
-        print(f"[🔍 DEBUG] status_final: '{status_final}'")
 
         # ================================
         # QUANTIDADE = 0: só atualiza Desembarque, não faz nada em conferencia
@@ -3328,13 +3145,11 @@ def inserir_conferencia():
                 data.get("id"),
             )
             
-            print(f"[🔍 DEBUG] Parâmetros UPDATE: {params}")
             
             cursor.execute(update_desembarque_query, params)
             conn.commit()
             cursor.close()
             conn.close()
-            print(f"✅ Desembarque ID {data.get('id')} finalizado sem lançar em conferencia (Qtd=0).")
             return jsonify({"status": "success", "message": "Conferência finalizada (sem lançamento em conferencia pois Qtd=0)."}), 200
 
         # ================================
@@ -3343,15 +3158,14 @@ def inserir_conferencia():
         # Função para processar datas com preservação de hora
         from datetime import datetime
         def parse_datetime(dt_str):
-            print(f"[🕐 parse_datetime] INPUT: {dt_str} (tipo: {type(dt_str)})")
+            pass
             if not dt_str:
-                print(f"[🕐 parse_datetime] OUTPUT: None (vazio)")
+                pass
                 return None
             try:
                 if isinstance(dt_str, str):
                     # Remove timezone e milissegundos, e converte T para espaço
                     dt_str_clean = dt_str.replace('T', ' ').split('.')[0].split('+')[0].strip()
-                    print(f"[🕐 parse_datetime] CLEAN: '{dt_str_clean}'")
                     
                     # Tenta primeiro com segundos (YYYY-MM-DD HH:MM:SS)
                     try:
@@ -3360,12 +3174,10 @@ def inserir_conferencia():
                         # Se falhar, tenta sem segundos (YYYY-MM-DD HH:MM) - formato datetime-local
                         parsed = datetime.strptime(dt_str_clean, "%Y-%m-%d %H:%M")
                     
-                    print(f"[🕐 parse_datetime] OUTPUT: {parsed}")
                     return parsed
-                print(f"[🕐 parse_datetime] OUTPUT: {dt_str} (já é datetime)")
                 return dt_str
             except Exception as e:
-                print(f"[🕐 parse_datetime] ERRO: {e} - Tentando retornar None")
+                pass
                 return None
         
         # Verifica se já existe conferência com o mesmo id
@@ -3417,7 +3229,6 @@ def inserir_conferencia():
                 qtd_conf,
                 data.get("id")
             ))
-            print(f"♻️ Conferência ID {data.get('id')} atualizada (UPDATE).")
         else:
             # INSERT se não existe — NOMES EXATOS DA TABELA CONFERENCIA
             insert_query = """
@@ -3469,7 +3280,6 @@ def inserir_conferencia():
                 data.get("lom"),
                 qtd_conf,
             ))
-            print(f"🆕 Conferência ID {data.get('id')} inserida (INSERT).")
 
         # UPDATE tabela Desembarque - AGORA INCLUI motivo_padrao
         update_desembarque_query = """
@@ -3495,7 +3305,6 @@ def inserir_conferencia():
             data.get("id")
         )
         
-        print(f"[🔍 DEBUG] Parâmetros UPDATE Desembarque (qtd>0): {params_desembarque}")
         
         cursor.execute(update_desembarque_query, params_desembarque)
 
@@ -3503,12 +3312,10 @@ def inserir_conferencia():
         cursor.close()
         conn.close()
 
-        print(f"✅ Conferência ID {data.get('id')} processada e Desembarque atualizado.")
         return jsonify({"status": "success", "message": "Conferência registrada/atualizada e desembarque atualizado."}), 200
 
     except Exception as e:
         import traceback
-        print(f"❌ Erro ao inserir/atualizar conferência:\n{traceback.format_exc()}")
         return jsonify({"status": "error", "message": str(e)}), 500
 
 @app.route('/api/conferencia', methods=['GET'])
@@ -3590,7 +3397,6 @@ def buscar_conferencia():
         
     except Exception as e:
         import traceback
-        print(f"❌ Erro ao buscar conferência:\n{traceback.format_exc()}")
         return jsonify({"status": "error", "message": str(e)}), 500
 
 @app.route("/api/conferencia/dropdowns", methods=["GET"])
@@ -3629,7 +3435,7 @@ def conferencia_dropdowns():
         conn.close()
         return jsonify(result), 200
     except Exception as e:
-        print(traceback.format_exc())
+        pass
         return jsonify({"status": "error", "message": str(e)}), 500
 
 
@@ -3693,7 +3499,7 @@ def consulta_conferencia():
         conn.close()
         return jsonify({"status": "success", "data": data}), 200
     except Exception as e:
-        print(traceback.format_exc())
+        pass
         return jsonify({"status": "error", "message": str(e)}), 500
 
 
@@ -3712,7 +3518,6 @@ def inserir_embarque():
         if not data:
             return jsonify({"status": "error", "message": "Nenhum dado recebido"}), 400
 
-        print(f"[📥 EMBARQUE] Dados recebidos: {data}")
 
         conn = get_sql_connection()
         if not conn:
@@ -3761,7 +3566,7 @@ def inserir_embarque():
                     return dt
                 return None
             except Exception as e:
-                print(f"⚠️ Erro ao converter datetime: {dt} - {e}")
+                pass
                 return None
 
         def to_nullable_str(v):
@@ -3783,8 +3588,6 @@ def inserir_embarque():
         lom_valor = to_nullable_str(data.get("lom"))
         
         # Log para debug
-        print(f"🕐 DEBUG DATETIME - Valor recebido: {data.get('data_inicio_quarentena')}")
-        print(f"🕐 DEBUG DATETIME - Valor convertido: {data_inicio_quarentena} (tipo: {type(data_inicio_quarentena)})")
 
         # -- Checa se ID existe na embarque
         cursor.execute("SELECT COUNT(1) FROM embarque WHERE id = ?", (id_,))
@@ -3839,9 +3642,7 @@ def inserir_embarque():
                 lom = ?
             WHERE id = ?
             """
-            print(f"[SQL UPDATE embarque] Params: {update_insert_values + [id_]}")
             cursor.execute(update_embarque_query, update_insert_values + [id_])
-            print(f"♻️ Embarque ID {id_} atualizado (UPDATE).")
         else:
             # INSERT - USAR NOMES CORRETOS DA TABELA EMBARQUE
             insert_embarque_query = """
@@ -3867,9 +3668,7 @@ def inserir_embarque():
                 lom
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """
-            print(f"[SQL INSERT embarque] Params: {[id_] + update_insert_values}")
             cursor.execute(insert_embarque_query, [id_] + update_insert_values)
-            print(f"🆕 Embarque ID {id_} inserido (INSERT).")
 
         if exists_conferencia:
             # UPDATE - USAR NOMES CORRETOS DA TABELA CONFERENCIA
@@ -3885,7 +3684,6 @@ def inserir_embarque():
                 conferencia_responsavel = ?
             WHERE Id = ?
             """
-            print(f"[SQL UPDATE conferencia] Params: {(conferencia_qtd, data.get('ToDepartment_DepartamentoDestino'), data.get('motivo_padrao') or data.get('status_final'), data.get('observacao'), data_inicio_quarentena, lom_valor, data.get('responsavel_conf'), id_)}")
             cursor.execute(update_conferencia_query, (
                 conferencia_qtd,
                 data.get("ToDepartment_DepartamentoDestino"),
@@ -3896,27 +3694,24 @@ def inserir_embarque():
                 data.get("responsavel_conf"),  # <- aqui entra o username/responsável
                 id_
             ))
-            print(f"♻️ Conferencia ID {id_} atualizado.")
         
             # Se for quarentena, reseta data_fim_quarentena para NULL
             if (data.get("motivo_padrao") or data.get("status_final")) == "Quarentena":
                 cursor.execute(
                     "UPDATE conferencia SET data_fim_quarentena = NULL WHERE id = ?", (id_,)
                 )
-                print(f"[SQL] data_fim_quarentena set NULL para id={id_}")
 
         else:
-            print(f"⚠️ ID {id_} não encontrado em conferencia para update.")
+            pass
 
         conn.commit()
         cursor.close()
         conn.close()
 
-        print(f"✅ Embarque ID {id_} processado e conferencia sincronizada.")
         return jsonify({"status": "success", "message": "Registro de embarque inserido/atualizado e conferencia sincronizada."}), 200
 
     except Exception as e:
-        print(f"❌ Erro EMBARQUE INSERT:\n{traceback.format_exc()}")
+        pass
         try:
             conn.rollback()
         except Exception:
@@ -3938,9 +3733,6 @@ def upload_imagem_embarque():
     - Armazena blob na tabela `conferencia` (se existir) e grava metadados únicos por registro.
     - Espelha metadados na tabela `embarque` apenas para o mesmo Id (não sobrescreve outras linhas).
     """
-    print(f"🔍 Content-Type: {request.content_type}")
-    print(f"🔍 Form data: {dict(request.form)}")
-    print(f"🔍 Files: {dict(request.files)}")
 
     is_auth, error_msg = verify_authentication()
     if not is_auth:
@@ -4013,12 +3805,10 @@ def upload_imagem_embarque():
             if target_cols:
                 update_stmt = f"UPDATE conferencia SET {', '.join(target_cols)} WHERE Id = ?"
                 params.append(id_embarque)
-                print(f"[SQL] Atualizando conferencia (image) id={id_embarque} cols={target_cols}")
                 cursor.execute(update_stmt, params)
                 conn.commit()
-                print(f"✅ Imagem salva em 'conferencia' para id={id_embarque}")
             else:
-                print(f"⚠️ Nenhuma coluna de imagem disponível em 'conferencia' para id={id_embarque}")
+                pass
 
         # Verifica existência do Id em embarque e atualiza somente o registro correspondente
         cursor.execute("SELECT COUNT(1) FROM embarque WHERE id = ?", (id_embarque,))
@@ -4027,7 +3817,6 @@ def upload_imagem_embarque():
         if not exists_conf and not exists_emb:
             cursor.close()
             conn.close()
-            print(f"❌ Id não encontrado em 'conferencia' nem em 'embarque': {id_embarque}")
             return jsonify({"status": "error", "message": "ID não encontrado em conferencia ou embarque."}), 404
 
         # Atualizar apenas o registro correspondente em embarque (espelhamento de metadados)
@@ -4049,12 +3838,10 @@ def upload_imagem_embarque():
         if emb_update_cols:
             emb_update_stmt = f"UPDATE dbo.embarque SET {', '.join(emb_update_cols)} WHERE id = ?"
             emb_params.append(id_embarque)
-            print(f"[SQL] Atualizando embarque (image) id={id_embarque} cols={emb_update_cols}")
             cursor.execute(emb_update_stmt, emb_params)
             conn.commit()
-            print(f"✅ Metadados de imagem espelhados em 'embarque' para id={id_embarque}")
         else:
-            print(f"⚠️ Nenhuma coluna de imagem disponível em 'embarque' para id={id_embarque}")
+            pass
 
         cursor.close()
         conn.close()
@@ -4067,7 +3854,7 @@ def upload_imagem_embarque():
         }), 200
 
     except Exception as e:
-        print(f"❌ Erro no upload: {e}")
+        pass
         import traceback
         traceback.print_exc()
         return jsonify({"status": "error", "message": str(e)}), 500
@@ -4088,7 +3875,6 @@ def listar_quarentena():
     """Listar registros em quarentena"""
 
     # Log dos headers recebidos (debug fundamental)
-    print("HEADERS RECEBIDOS:", dict(request.headers))
 
     # Verificar autenticação
     is_auth, error_msg = verify_authentication()
@@ -4162,10 +3948,10 @@ def listar_quarentena():
         
         # Debug: Ver o que está vindo do banco
         if rows:
-            print(f"🔍 DEBUG QUARENTENA - Primeiro registro RAW do banco:")
+            pass
             first_row = rows[0]
             for i, col in enumerate(columns):
-                print(f"   {col}: {first_row[i]} (tipo: {type(first_row[i])})")
+                pass
         
         data = [dict(zip(columns, row)) for row in rows]
 
@@ -4176,7 +3962,6 @@ def listar_quarentena():
 
     except Exception as e:
         import traceback
-        print("❌ Erro na rota /api/quarentena:\n", traceback.format_exc())
         return jsonify({"status": "error", "message": str(e)}), 500
 
 
@@ -4324,7 +4109,6 @@ def atualizar_quarentena():
         if not data:
             return jsonify({"status": "error", "message": "Nenhum dado recebido"}), 400
 
-        print(f"[📦 QUARENTENA] Dados recebidos do frontend: {data}")
 
         conn = get_sql_connection()
         if not conn:
@@ -4337,13 +4121,6 @@ def atualizar_quarentena():
         quarentena_observacao = data.get("observacao") or data.get("quarentena_observacao")
         data_fim_quarentena = to_sql_datetime(data.get("data_fim_quarentena"))
         
-        print(f"[📊 QUARENTENA] Dados processados:")
-        print(f"    ID: {id_}")
-        print(f"    Status Final: {status_final}")
-        print(f"    Responsável: {quarentena_responsavel}")
-        print(f"    Observação: {quarentena_observacao}")
-        print(f"    Data Fim Quarentena (original): {data.get('data_fim_quarentena')}")
-        print(f"    Data Fim Quarentena (processada): {data_fim_quarentena}")
 
         # Upsert em embarque se for Enviado para Embarque
         if status_final == "Enviado para Embarque":
@@ -4406,11 +4183,9 @@ def atualizar_quarentena():
             if existe_embarque:
                 set_fields = ", ".join([f"{c} = ?" for c in campos[1:]])  # ignora o id
                 update_query = f"UPDATE embarque SET {set_fields} WHERE id = ?"
-                print(f"[SQL UPDATE embarque] Params: {valores[1:] + [id_]}")
                 cursor.execute(update_query, valores[1:] + [id_])
             else:
                 insert_query = f"INSERT INTO embarque ({', '.join(campos)}) VALUES ({', '.join(['?'] * len(campos))})"
-                print(f"[SQL INSERT embarque] Params: {valores}")
                 cursor.execute(insert_query, valores)
 
         # Atualiza todos os campos relevantes de quarentena na conferencia
@@ -4425,17 +4200,12 @@ def atualizar_quarentena():
             id_
         ]
         
-        print(f"[🔄 QUARENTENA UPDATE conferencia] ID: {id_}")
-        print(f"[📊 QUARENTENA UPDATE conferencia] Campos: {update_campos_conf}")
-        print(f"[📊 QUARENTENA UPDATE conferencia] Valores: {update_values}")
         
         update_query = (
             "UPDATE conferencia SET "
             + ", ".join([f"{c} = ?" for c in update_campos_conf])
             + " WHERE id = ?"
         )
-        print(f"[📝 QUARENTENA UPDATE conferencia] Query: {update_query}")
-        print(f"[SQL UPDATE conferencia] Params: {tuple(update_values)}")
         cursor.execute(update_query, update_values)
 
         conn.commit()
@@ -4445,7 +4215,6 @@ def atualizar_quarentena():
 
     except Exception as e:
         import traceback
-        print("❌ Erro ao atualizar quarentena:\n", traceback.format_exc())
         try:
             conn.rollback()
         except Exception:
@@ -4530,7 +4299,6 @@ def consultar_embarque():
 
     except Exception as e:
         import traceback
-        print("❌ Erro consulta embarque:\n", traceback.format_exc())
         return jsonify({"status": "error", "message": str(e)}), 500
 
 @app.route("/api/embarque/imagem/<path:id>", methods=["GET", "OPTIONS"])
@@ -4543,6 +4311,7 @@ def visualizar_imagem_embarque(id):
     """Visualizar imagem de embarque: busca APENAS no banco de dados (image_bin).
     
     Lógica:
+        pass
     1. Busca image_bin na tabela embarque (blob) - PRIORIDADE
     2. Se não encontrar, busca image_bin na tabela conferencia (blob)
     3. Retorna 404 se não encontrar em nenhuma das tabelas
@@ -4550,29 +4319,23 @@ def visualizar_imagem_embarque(id):
     NÃO busca em filesystem - apenas dados armazenados no banco.
     """
 
-    print(f"\n{'='*80}")
-    print(f"[🖼️ DEBUG IMAGE] Tentativa de visualizar imagem ID: {id}")
-    print(f"{'='*80}")
 
     # Verificar autenticação
     try:
         auth_res = verify_authentication()
     except Exception as e:
-        print(f"[❌ DEBUG] Erro ao verificar autenticação: {e}")
+        pass
         auth_res = None
 
     if not auth_res:
-        print(f"[❌ DEBUG] Falha na autenticação para requisição de imagem: {id}")
+        pass
         return jsonify({"status": "error", "message": "Unauthorized"}), 401
 
-    print(f"[✅ DEBUG] Autenticação OK para imagem {id}")
 
     try:
         import traceback
 
         # PRIORIDADE 1: Buscar image_bin na tabela embarque
-        print(f"\n[🔎 DEBUG] === BUSCANDO NA TABELA EMBARQUE ===")
-        print(f"[🔎 DEBUG] Query: SELECT image_bin, image FROM embarque WHERE id = '{id}'")
         try:
             conn = get_sql_connection()
             if conn:
@@ -4586,11 +4349,6 @@ def visualizar_imagem_embarque(id):
                         image_bin = row[0]
                         image_name = row[1]
                         
-                        print(f"\n[✅ DEBUG] IMAGE_BIN ENCONTRADO NA TABELA EMBARQUE!")
-                        print(f"[📊 DEBUG] Tamanho do blob: {len(image_bin)} bytes ({len(image_bin)/1024:.2f} KB)")
-                        print(f"[📦 DEBUG] Nome da imagem no DB: {image_name}")
-                        print(f"[🔢 DEBUG] Primeiros 32 bytes (hex): {image_bin[:32].hex()}")
-                        print(f"[🔢 DEBUG] Tipo do objeto image_bin: {type(image_bin)}")
                         
                         bio = io.BytesIO(image_bin)
                         
@@ -4601,8 +4359,6 @@ def visualizar_imagem_embarque(id):
                         if not mime:
                             mime = 'image/jpeg'
                         
-                        print(f"[🎯 DEBUG] Mime-type detectado: {mime}")
-                        print(f"[📤 DEBUG] Preparando resposta com send_file...")
 
                         resp = make_response(send_file(bio, mimetype=mime))
                         origin = request.headers.get('Origin')
@@ -4619,18 +4375,14 @@ def visualizar_imagem_embarque(id):
                         except Exception:
                             pass
 
-                        print(f"[✅ DEBUG] Imagem enviada com sucesso da tabela embarque!")
-                        print(f"{'='*80}\n")
                         return resp
                     else:
-                        print(f"[⚠️ DEBUG] image_bin NÃO encontrado na tabela embarque (row: {row})")
+                        pass
                 except Exception as e_db1:
-                    print(f"[❌ DEBUG] Erro ao consultar embarque.image_bin: {e_db1}")
+                    pass
                     traceback.print_exc()
 
                 # PRIORIDADE 2: Se não encontrou em embarque, buscar em conferencia
-                print(f"\n[🔎 DEBUG] === BUSCANDO NA TABELA CONFERENCIA ===")
-                print(f"[🔎 DEBUG] Query: SELECT image_bin, imagem, arquivo, image, file FROM conferencia WHERE id = '{id}'")
                 try:
                     cursor.execute("SELECT TOP 1 image_bin, imagem, arquivo, image, file FROM conferencia WHERE id = ?", (id,))
                     row2 = cursor.fetchone()
@@ -4638,11 +4390,6 @@ def visualizar_imagem_embarque(id):
                         conf_image_bin = row2[0]
                         conf_image_name = row2[1] or row2[2] or row2[3] or row2[4]
                         
-                        print(f"\n[✅ DEBUG] IMAGE_BIN ENCONTRADO NA TABELA CONFERENCIA!")
-                        print(f"[📊 DEBUG] Tamanho do blob: {len(conf_image_bin)} bytes ({len(conf_image_bin)/1024:.2f} KB)")
-                        print(f"[📦 DEBUG] Nome da imagem no DB: {conf_image_name}")
-                        print(f"[🔢 DEBUG] Primeiros 32 bytes (hex): {conf_image_bin[:32].hex()}")
-                        print(f"[🔢 DEBUG] Tipo do objeto image_bin: {type(conf_image_bin)}")
                         
                         bio2 = io.BytesIO(conf_image_bin)
                         
@@ -4652,8 +4399,6 @@ def visualizar_imagem_embarque(id):
                         if not mime2:
                             mime2 = 'image/jpeg'
 
-                        print(f"[🎯 DEBUG] Mime-type detectado: {mime2}")
-                        print(f"[📤 DEBUG] Preparando resposta com send_file...")
 
                         resp2 = make_response(send_file(bio2, mimetype=mime2))
                         origin = request.headers.get('Origin')
@@ -4670,13 +4415,11 @@ def visualizar_imagem_embarque(id):
                         except Exception:
                             pass
 
-                        print(f"[✅ DEBUG] Imagem enviada com sucesso da tabela conferencia!")
-                        print(f"{'='*80}\n")
                         return resp2
                     else:
-                        print(f"[⚠️ DEBUG] image_bin NÃO encontrado na tabela conferencia (row: {row2})")
+                        pass
                 except Exception as e_db2:
-                    print(f"[❌ DEBUG] Erro ao consultar conferencia.image_bin: {e_db2}")
+                    pass
                     traceback.print_exc()
 
                 try:
@@ -4685,16 +4428,14 @@ def visualizar_imagem_embarque(id):
                 except Exception:
                     pass
         except Exception as e_conn:
-            print(f"[❌ DEBUG] Erro ao conectar ao banco para busca de imagem: {e_conn}")
+            pass
             traceback.print_exc()
 
         # Se chegou aqui, não encontrou em nenhuma tabela
-        print(f"\n[❌ DEBUG] IMAGEM NÃO ENCONTRADA NO BANCO DE DADOS PARA ID: {id}")
-        print(f"{'='*80}\n")
         return jsonify({"status": "error", "message": "Imagem não encontrada no banco de dados"}), 404
 
     except Exception as e:
-        print(f"[❌ DEBUG] Erro inesperado em visualizar_imagem_embarque: {e}")
+        pass
         traceback.print_exc()
         return jsonify({"status": "error", "message": "Erro interno"}), 500
 
@@ -4707,7 +4448,7 @@ def visualizar_imagem_embarque(id):
     supports_credentials=True
 )
 def visualizar_imagem_embarque_query():
-    print("[🖼️ DEBUG] Requisição para /api/embarque/imagem/ com query string")
+    pass
     """Compatibilidade: permite chamar /api/embarque/imagem?id=123 ou sem id para mensagem clara.
 
     Se 'id' estiver presente como query param, delega para o handler principal. Caso contrário
@@ -4717,7 +4458,7 @@ def visualizar_imagem_embarque_query():
     id_qs = request.args.get('id') or request.args.get('imageId') or request.args.get('arquivo') or request.args.get('filename')
 
     if not id_qs:
-        print(f"[⚠️ DEBUG] Requisição para /api/embarque/imagem sem id (query string: {request.query_string}) - tentando inferir...")
+        pass
 
         # 1) tentar extrair id do Referer (?id=123 ou /.../123)
         referer = request.headers.get('Referer') or request.headers.get('referer')
@@ -4727,20 +4468,17 @@ def visualizar_imagem_embarque_query():
                 m = re.search(r'[?&]id=(\d+)', referer)
                 if m:
                     id_qs = m.group(1)
-                    print(f"[🔎 DEBUG] ID extraído do Referer querystring: {id_qs}")
                 else:
                     m2 = re.search(r'/([^/]+)/(\d+)(?:$|[?/#])', referer)
                     if m2:
                         id_qs = m2.group(2)
-                        print(f"[🔎 DEBUG] ID extraído do Referer path: {id_qs}")
             except Exception as e:
-                print(f"[⚠️ DEBUG] Erro ao analisar Referer: {e}")
+                pass
 
     # 2) Se ainda não encontrou id, tentar buscar último upload/conferência do usuário (priorizar 'embarque')
     if not id_qs:
         try:
             username = request.headers.get('x-user-name') or request.headers.get('X-User-Name')
-            print(f"[🔍 DEBUG] Tentando localizar último ID com imagem no DB para user: {username}")
             conn = get_sql_connection()
             if conn:
                 cur = conn.cursor()
@@ -4754,7 +4492,6 @@ def visualizar_imagem_embarque_query():
                 row = cur.fetchone()
                 if row and row[0]:
                     id_qs = str(row[0])
-                    print(f"[✅ DEBUG] Encontrado ID via DB fallback em 'embarque': {id_qs}")
                 else:
                     # fallback para 'conferencia'
                     if username:
@@ -4764,7 +4501,6 @@ def visualizar_imagem_embarque_query():
                     row2 = cur.fetchone()
                     if row2 and row2[0]:
                         id_qs = str(row2[0])
-                        print(f"[✅ DEBUG] Encontrado ID via DB fallback em 'conferencia': {id_qs}")
 
                 try:
                     cur.close()
@@ -4773,10 +4509,10 @@ def visualizar_imagem_embarque_query():
                     pass
 
         except Exception as e:
-            print(f"[⚠️ DEBUG] Erro ao consultar DB para id fallback: {e}")
+            pass
 
     if not id_qs:
-        print(f"[❌ DEBUG] Não foi possível inferir ID da imagem; retornando 400")
+        pass
         return jsonify({"status": "error", "message": "ID da imagem obrigatório. Use /api/embarque/imagem/<id> ou /api/embarque/imagem?id=<id>"}), 400
 
     # Delegar para a função existente que aceita id por path
@@ -4790,7 +4526,7 @@ def embarque_image_metadata(id):
     Uso: frontend pode chamar este endpoint para saber o nome exato do arquivo salvo no FS.
     """
     try:
-        print(f"[🗂️ DEBUG] Requisição metadata imagem para id: {id}")
+        pass
         # Autenticação compatível
         auth_res = verify_authentication()
         if not auth_res:
@@ -4809,10 +4545,9 @@ def embarque_image_metadata(id):
                 fname = str(row[0])
                 cursor.close()
                 conn.close()
-                print(f"[🗂️ DEBUG] Metadata encontrada em embarque.image: {fname}")
                 return jsonify({"status": "success", "file": fname}), 200
         except Exception as e:
-            print(f"[🗂️ DEBUG] Erro consultando embarque.image: {e}")
+            pass
 
         # Tentar na tabela conferencia (colunas comuns)
         try:
@@ -4824,23 +4559,20 @@ def embarque_image_metadata(id):
                         fname = str(candidate)
                         cursor.close()
                         conn.close()
-                        print(f"[🗂️ DEBUG] Metadata encontrada em conferencia: {fname}")
                         return jsonify({"status": "success", "file": fname}), 200
         except Exception as e:
-            print(f"[🗂️ DEBUG] Erro consultando conferencia metadata: {e}")
+            pass
 
         cursor.close()
         conn.close()
-        print(f"[🗂️ DEBUG] Metadata não encontrada para id: {id}")
         return jsonify({"status": "error", "message": "Metadata not found"}), 404
 
     except Exception as e:
         import traceback
-        print(f"[🗂️ DEBUG] Erro interno em embarque_image_metadata: {e}")
         traceback.print_exc()
         return jsonify({"status": "error", "message": "Erro interno"}), 500
     except Exception as e:
-        print(f"[❌ DEBUG] Erro: {str(e)}")
+        pass
         return jsonify({"status": "error", "message": str(e)}), 500
 
 
@@ -4912,7 +4644,7 @@ def consulta_embarque():
         conn.close()
         return jsonify({"status": "success", "data": data}), 200
     except Exception as e:
-        print(traceback.format_exc())
+        pass
         return jsonify({"status": "error", "message": str(e)}), 500
 
 
@@ -4957,7 +4689,7 @@ def embarque_dropdowns():
         conn.close()
         return jsonify(result), 200
     except Exception as e:
-        print(traceback.format_exc())
+        pass
         return jsonify({"status": "error", "message": str(e)}), 500
 
 
@@ -4975,7 +4707,6 @@ def atualizar_embarque():
         if not data:
             return jsonify({"status": "error", "message": "Nenhum dado recebido"}), 400
 
-        print(f"[📦 RECEBIMENTO - UPDATE] Dados recebidos: {data}")
 
         conn = get_sql_connection()
         if not conn:
@@ -5015,8 +4746,6 @@ def atualizar_embarque():
             data.get("id"),
         )
         
-        print(f"[DEBUG EMBARQUE UPDATE] Query: {query}")
-        print(f"[DEBUG EMBARQUE UPDATE] Params: {params}")
         
         cursor.execute(query, params)
 
@@ -5047,18 +4776,15 @@ def atualizar_embarque():
             UPDATE conferencia SET data_fim_quarentena = NULL WHERE id = ?
             """
             cursor.execute(query_reset_fim, (data.get("id"),))
-            print(f"[SQL] data_fim_quarentena set NULL para id={data.get('id')}")
 
         conn.commit()
         cursor.close()
         conn.close()
 
-        print(f"✅ Embarque ID {data.get('id')} atualizado com sucesso.")
         return jsonify({"status": "success", "message": "Registro de embarque atualizado."}), 200
 
     except Exception as e:
         import traceback
-        print(f"❌ Erro ao atualizar embarque:\n{traceback.format_exc()}")
         return jsonify({"status": "error", "message": str(e)}), 500
 
 # ========================================
@@ -5154,7 +4880,6 @@ def listar_lom_pendente():
 
     except Exception as e:
         import traceback
-        print("[/api/lom] ERRO:", traceback.format_exc())
         return jsonify({"status": "error", "message": str(e)}), 500
 
 @app.route("/api/lom/atualizar", methods=["POST"])
@@ -5209,10 +4934,9 @@ def atualizar_lom():
     try:
         # -------- Entrada --------
         data = request.get_json(silent=True)
-        print(f"[📦 LOM UPDATE] Dados recebidos: {data}")
         
         if not data:
-            print("[❌ LOM UPDATE] Nenhum dado recebido")
+            pass
             return jsonify({"status": "error", "message": "Nenhum dado recebido"}), 400
 
         # ID é string, não converter para int!
@@ -5221,23 +4945,20 @@ def atualizar_lom():
         observacao_lom = (data.get("observacao_lom") or "").strip()
         lom_responsavel = (data.get("responsavel_conf") or "").strip()
 
-        print(f"[📊 LOM UPDATE] Processado - ID: '{record_id}', LOM: '{lom}', Obs: '{observacao_lom}', Resp: '{lom_responsavel}'")
 
         if not record_id:
-            print(f"[❌ LOM UPDATE] ID inválido: {data.get('id')}")
+            pass
             return jsonify({"status": "error", "message": "ID inválido"}), 400
         if not lom:
-            print(f"[❌ LOM UPDATE] Campo LOM vazio ou inválido")
+            pass
             return jsonify({"status": "error", "message": "O campo LOM é obrigatório"}), 400
 
         # -------- Conexão --------
-        print("[🔌 LOM UPDATE] Conectando ao banco...")
         conn = get_sql_connection()
         if not conn:
-            print("[❌ LOM UPDATE] Falha na conexão com o banco")
+            pass
             return jsonify({"status": "error", "message": "Falha na conexão com o banco"}), 500
         cursor = conn.cursor()
-        print("[✅ LOM UPDATE] Conexão estabelecida")
 
         # -------- Update em conferencia --------
         update_conferencia = """
@@ -5245,20 +4966,16 @@ def atualizar_lom():
                SET lom = ?, observacao_lom = ?, lom_responsavel = ?
              WHERE id = ?
         """
-        print(f"[🔄 LOM UPDATE] Executando UPDATE em conferencia - ID: {record_id}")
         cursor.execute(update_conferencia, (lom, observacao_lom, lom_responsavel, record_id))
         rows_affected = cursor.rowcount
-        print(f"[📊 LOM UPDATE] Linhas afetadas em conferencia: {rows_affected}")
         
         if rows_affected == 0:
-            print(f"[❌ LOM UPDATE] Registro não encontrado na conferencia - ID: {record_id}")
+            pass
             conn.rollback()
             return jsonify({"status": "error", "message": "Registro de conferencia não encontrado"}), 404
 
-        print("[✅ LOM UPDATE] UPDATE em conferencia executado com sucesso")
 
         # -------- Busca campos atuais em conferencia (para refletir na embarque) --------
-        print(f"[🔍 LOM UPDATE] Buscando dados atualizados da conferencia - ID: {record_id}")
         select_conferencia = """
             SELECT
                 id,
@@ -5357,12 +5074,10 @@ def atualizar_lom():
             ]
             cursor.execute(update_embarque, params_update)
         else:
-            print(f"[⚠️ LOM UPDATE] Registro ID={record_id} não existe em embarque - UPDATE não aplicado")
+            pass
 
         # -------- Commit --------
-        print(f"[💾 LOM UPDATE] Fazendo commit das alterações")
         conn.commit()
-        print(f"[✅ LOM UPDATE] Commit realizado com sucesso")
 
         # -------- Resposta --------
         response_payload = {
@@ -5372,34 +5087,29 @@ def atualizar_lom():
             "lom_responsavel": lom_responsavel,
             "replicado_em_embarque": bool(exists),
         }
-        print(f"[✅ LOM UPDATE] LOM atualizado com sucesso para ID {record_id} - Replicado em embarque: {bool(exists)}")
         return jsonify({"status": "success", "data": response_payload}), 200
 
     except Exception as e:
-        print(f"[❌ LOM UPDATE] ERRO CAPTURADO: {str(e)}")
+        pass
         import traceback
-        print(f"[❌ LOM UPDATE] Traceback completo:\n{traceback.format_exc()}")
         
         if conn:
             try:
                 conn.rollback()
-                print(f"[↩️ LOM UPDATE] Rollback executado")
             except Exception:
                 pass
         return jsonify({"status": "error", "message": str(e)}), 500
 
     finally:
-        print(f"[🧹 LOM UPDATE] Limpeza de recursos")
+        pass
         try:
             if cursor:
                 cursor.close()
-                print(f"[✅ LOM UPDATE] Cursor fechado")
         except Exception:
             pass
         try:
             if conn:
                 conn.close()
-                print(f"[✅ LOM UPDATE] Conexão fechada")
         except Exception:
             pass
 
@@ -5408,7 +5118,7 @@ def atualizar_lom():
 
 @app.route('/api/dashboard/desembarque_stats', methods=['GET'])
 def get_desembarque_stats():
-    print("🔥 ENDPOINT /api/dashboard/desembarque_stats CHAMADO!")
+    pass
     
     # Verificar autenticação
     is_auth, error_msg = verify_authentication()
@@ -5452,17 +5162,16 @@ def get_desembarque_stats():
             'pendentes': pendentes
         }
 
-        print(f"🔥 Resultado final: {results}")
         return jsonify({"status": "success", "data": results})
 
     except Exception as e:
-        print(f"🔥 ERRO: {str(e)}")
+        pass
         return jsonify({"status": "error", "message": str(e)}), 500
 
 
 @app.route('/api/dashboard/conferencia_stats', methods=['GET'])
 def get_conferencia_stats():
-    print("🔥 ENDPOINT /api/dashboard/conferencia_stats CHAMADO!")
+    pass
     
     # Verificar autenticação
     is_auth, error_msg = verify_authentication()
@@ -5506,17 +5215,16 @@ def get_conferencia_stats():
             'pendentes': pendentes
         }
 
-        print(f"🔥 Resultado Conferência: {results}")
         return jsonify({"status": "success", "data": results})
 
     except Exception as e:
-        print(f"🔥 ERRO Conferência: {str(e)}")
+        pass
         return jsonify({"status": "error", "message": str(e)}), 500
 
 
 @app.route('/api/dashboard/lom_stats', methods=['GET'])
 def get_lom_stats():
-    print("🔥 ENDPOINT /api/dashboard/lom_stats CHAMADO!")
+    pass
     
     # Verificar autenticação
     is_auth, error_msg = verify_authentication()
@@ -5560,17 +5268,16 @@ def get_lom_stats():
             'pendentes': pendentes
         }
 
-        print(f"🔥 Resultado LOM: {results}")
         return jsonify({"status": "success", "data": results})
 
     except Exception as e:
-        print(f"🔥 ERRO LOM: {str(e)}")
+        pass
         return jsonify({"status": "error", "message": str(e)}), 500
 
 
 @app.route('/api/dashboard/quarentena_stats', methods=['GET'])
 def get_quarentena_stats():
-    print("🔥 ENDPOINT /api/dashboard/quarentena_stats CHAMADO!")
+    pass
     
     # Verificar autenticação
     is_auth, error_msg = verify_authentication()
@@ -5616,11 +5323,10 @@ def get_quarentena_stats():
             'pendentes': pendentes
         }
 
-        print(f"🔥 Resultado Quarentena: {results}")
         return jsonify({"status": "success", "data": results})
 
     except Exception as e:
-        print(f"🔥 ERRO Quarentena: {str(e)}")
+        pass
         return jsonify({"status": "error", "message": str(e)}), 500
 
 
@@ -5656,7 +5362,7 @@ def debug_image_status(id):
                     'hash_hex': r[2].strip() if r[2] else None
                 }
         except Exception as e:
-            print(f"❌ Erro debug conferencia: {e}")
+            pass
 
         try:
             cur.execute(
@@ -5671,7 +5377,7 @@ def debug_image_status(id):
                     'hash_hex': r2[2].strip() if r2[2] else None
                 }
         except Exception as e:
-            print(f"❌ Erro debug embarque: {e}")
+            pass
 
         try:
             cur.close()
@@ -5683,13 +5389,12 @@ def debug_image_status(id):
 
     except Exception as e:
         import traceback
-        print(f"❌ Erro no endpoint debug/image_status: {traceback.format_exc()}")
         return jsonify({"status": "error", "message": str(e)}), 500
 
 
 @app.route('/api/dashboard/embarque_stats', methods=['GET'])
 def get_embarque_stats():
-    print("🔥 ENDPOINT /api/dashboard/embarque_stats CHAMADO!")
+    pass
     
     # Verificar autenticação
     is_auth, error_msg = verify_authentication()
@@ -5734,16 +5439,15 @@ def get_embarque_stats():
             'pendentes': pendentes
         }
 
-        print(f"🔥 Resultado Embarque: {results}")
         return jsonify({"status": "success", "data": results})
 
     except Exception as e:
-        print(f"🔥 ERRO Embarque: {str(e)}")
+        pass
         return jsonify({"status": "error", "message": str(e)}), 500
 
 @app.route('/api/dashboard/atividades_recentes', methods=['GET'])
 def get_atividades_recentes():
-    print("🔥 ENDPOINT /api/dashboard/atividades_recentes CHAMADO!")
+    pass
     
     # Verificar autenticação
     is_auth, error_msg = verify_authentication()
@@ -5852,17 +5556,16 @@ def get_atividades_recentes():
         cursor.close()
         conn.close()
 
-        print(f"🔥 Atividades encontradas: {len(atividades_ordenadas)}")
         return jsonify({"status": "success", "data": atividades_ordenadas})
 
     except Exception as e:
-        print(f"🔥 ERRO Atividades: {str(e)}")
+        pass
         return jsonify({"status": "error", "message": str(e)}), 500
 
 
 @app.route('/api/dashboard/embarque_grafico', methods=['GET'])
 def get_embarque_grafico():
-    print("🔥 ENDPOINT /api/dashboard/embarque_grafico CHAMADO!")
+    pass
     
     # Verificar autenticação
     is_auth, error_msg = verify_authentication()
@@ -5898,11 +5601,10 @@ def get_embarque_grafico():
         cursor.close()
         conn.close()
 
-        print(f"🔥 Dados gráfico embarque: {len(grafico_data)} pontos")
         return jsonify({"status": "success", "data": grafico_data})
 
     except Exception as e:
-        print(f"🔥 ERRO Gráfico Embarque: {str(e)}")
+        pass
         return jsonify({"status": "error", "message": str(e)}), 500
     
 # 🏠 ROTAS DE PÁGINAS HTML
@@ -5990,6 +5692,10 @@ def index():
 # ========================================
 
 if __name__ == '__main__':
+    # Desabilitar logs de requisições do Werkzeug
+    log = logging.getLogger('werkzeug')
+    log.setLevel(logging.ERROR)
+    
     # Start the Flask app normally; avoid accessing `request` or using `return` at module level.
     port = int(os.environ.get('PORT', 9280))
-    app.run(host='0.0.0.0', port=port, debug=True)
+    app.run(host='0.0.0.0', port=port, debug=True, use_reloader=False)
