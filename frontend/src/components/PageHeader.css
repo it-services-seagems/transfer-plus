@@ -1,0 +1,29 @@
+/* ===== PageHeader — fixed bar just below the navbar, shared across all pages ===== */
+.page-header {
+  position: fixed;
+  margin-top: -3px;
+  top: var(--navbar-height);    /* sits immediately below the navbar */
+  left: 0;
+  right: 0;
+  z-index: 1050;                /* below navbar (1100) so navbar dropdowns stay on top */
+  background: #ffffff;
+  padding: 10px 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+  /* layout */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* Mobile: revert to static so it doesn't eat fixed vertical space on small screens */
+@media (max-width: 768px) {
+  .page-header {
+    position: static;
+    box-shadow: none;
+    border-bottom: 1px solid #e8edf2;
+    margin-bottom: 12px;
+  }
+}

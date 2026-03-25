@@ -1,0 +1,103 @@
+.container-all {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #d8d6d6da;
+  background: url('../assets/back.png') no-repeat center center fixed;
+  background-size: cover;
+}
+
+.container-inside {
+  width: 100%;
+  max-width: 400px;
+}
+
+.t-Login-region {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.219);
+  padding: 2rem;
+}
+
+.t-Login-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.t-Login-logo {
+  height: 80px;
+  margin-bottom: 1rem;
+  margin-left: 130px;
+}
+
+.t-Login-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-left: 60px;
+  color: #073776;
+}
+
+.t-Login-body {
+  display: flex;
+  flex-direction: column;
+}
+
+.t-Form-fieldContainer {
+  margin-bottom: 1rem;
+}
+
+.t-Form-inputContainer {
+  position: relative;
+}
+
+.t-Form-itemWrapper {
+  display: flex;
+  align-items: center;
+}
+
+.text_field, .password {
+  width: 100%;
+  padding: 0.75rem 2.5rem 0.75rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.apex-item-icon {
+  position: absolute;
+  right: 1rem;
+  color: #aaa;
+}
+
+.t-Login-buttons {
+  text-align: center;
+}
+
+.t-Button {
+  background-color: #073776;
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.t-Button:hover {
+  background-color: #005bb5;
+}
+
+.t-Button-label {
+  font-weight: 600;
+}
+
+.footer {
+  position: absolute;
+  bottom: 10px;
+  width: 100%;
+  text-align: center;
+  color: #807f7f;
+  font-size: 14px;
+}

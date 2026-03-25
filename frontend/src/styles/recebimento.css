@@ -1,0 +1,214 @@
+/* ============================= */
+/* 🌟 ESTILIZAÇÃO DO FORMULÁRIO */
+/* ============================= */
+
+/* Cores da marca */
+:root {
+  --primary-blue: #073776; /* Pantone 288 C */
+  --secondary-green: #44D62C; /* Pantone 802 C */
+  --dark-gray: #1D1D1D; /* Preto 95% */
+  --bright-blue: #0085CA; /* Process Blue C */
+  --white: #ffffff;
+  --light-gray: #f8f9fa;
+}
+
+/* Contêiner principal */
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: 'Arial', sans-serif;
+  background: var(--white);
+}
+
+/* Header fixo para troca de idioma */
+.fixed-header {
+  position: sticky;
+  top: 0;
+  background: var(--primary-blue);
+  padding: 10px 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  color: var(--white);
+}
+
+/* Alternador de idioma */
+.language-switcher {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+}
+
+.language-switcher img {
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+}
+
+.language-switcher img:hover {
+  transform: scale(1.1);
+}
+
+/* ======================= */
+/* 🌍 ESTILOS GERAIS */
+/* ======================= */
+
+/* Estilizando cada seção */
+.section {
+  background: var(--light-gray);
+  padding: 20px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Títulos das seções */
+.section h2 {
+  font-size: 20px;
+  margin-bottom: 15px;
+  color: var(--primary-blue);
+}
+
+/* Labels */
+label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 10px; /* Aumentado de 5px para 10px */
+  color: var(--dark-gray);
+}
+
+/* Inputs e Selects */
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="number"],
+select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid var(--primary-blue);
+  border-radius: 5px;
+  font-size: 14px;
+  color: var(--dark-gray);
+}
+
+/* Placeholder em itálico */
+input::placeholder {
+  font-style: italic;
+}
+
+/* Botões */
+button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  background-color: var(--bright-blue);
+  color: var(--white);
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out;
+}
+
+button:hover {
+  background-color: var(--primary-blue);
+}
+
+/* Botões desabilitados */
+button:disabled {
+  background-color: var(--dark-gray);
+  cursor: not-allowed;
+}
+
+/* ================================ */
+/* 🔲 CHECKBOX E RADIO BUTTONS */
+/* ================================ */
+
+/* Grupo de checkboxes */
+.checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  cursor: pointer;
+}
+
+.checkbox-group label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.checkbox-group input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  cursor: pointer;
+}
+
+/* Grupo de radio buttons */
+.radio-group {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.radio-group label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.radio-group input[type="radio"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+/* ============================ */
+/* 📱 RESPONSIVIDADE */
+/* ============================ */
+
+@media (max-width: 768px) {
+  .container {
+    width: 95%;
+  }
+
+  .fixed-header {
+    padding: 10px;
+  }
+
+  .language-switcher {
+    justify-content: center;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  select {
+    font-size: 16px;
+  }
+
+  button {
+    font-size: 14px;
+  }
+}
+.section label {
+  display: block;
+  margin-bottom: 8px;
+  margin-top: 15px;
+}
+
+.section input, .section select, .section textarea {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 15px;
+}
+
+

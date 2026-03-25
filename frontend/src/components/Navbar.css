@@ -1,0 +1,378 @@
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 20px;
+  background: #073776;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 50px;
+  z-index: 1100;
+  gap: 12px;
+}
+
+.navbar-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.navbar-logo-img {
+  height: 32px;
+  width: auto;
+  object-fit: contain;
+}
+
+.nav-links {
+  display: flex;
+  list-style: none;
+  gap: 1px;
+  margin: 0;
+  padding: 0;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+}
+
+.nav-links li {
+  margin: 0;
+}
+
+.nav-links .links {
+  margin: 0;
+  list-style: none;
+}
+
+.nav-links .links a {
+  display: flex;
+  align-items: center;
+  padding: 16px 8px;
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.8em;
+  gap: 6px;
+  transition: all 0.3s ease;
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.nav-links .links a:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.nav-links .links.active a {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  border-bottom: 2px solid #fff;
+  margin-top: 4px;
+}
+
+.nav-links .links a .t-Icon {
+  color: inherit;
+}
+
+.nav-links .links a .t-Icon svg {
+  color: inherit;
+  fill: currentColor;
+}
+
+.t-Icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 20px;
+  width: 20px;
+  height: 20px;
+  box-sizing: border-box;
+  font-size: 14px;
+  text-align: center;
+  background: transparent;
+}
+
+.t-Tabs-label {
+  white-space: nowrap;
+  font-size: 0.85em;
+}
+
+.dropdown {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+ 
+.dropbtn {
+    background-color: #0085CA;
+    color: white;
+    padding: 8px 15px;
+    font-size: 13px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: 600;
+    width: fit-content;
+    transition: background-color 0.2s;
+}
+ 
+.dropbtn:hover {
+    background-color: #0073b1;
+}
+ 
+.dropbtn:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 133, 202, 0.5);
+}
+ 
+.dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 40px;
+    background-color: #ffffff;
+    min-width: 150px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 2000;
+    border-radius: 4px;
+    overflow: hidden;
+    animation: fadeIn 0.2s ease-in-out;
+    pointer-events: auto !important;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdown-content-portal a,
+.dropdown-content-portal button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  color: #333;
+  text-decoration: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: background-color 0.2s ease;
+  text-align: left;
+}
+
+.dropdown-content-portal a:hover,
+.dropdown-content-portal button:hover {
+  background-color: #f5f5f5;
+}
+
+.dropdown-content-portal a + a,
+.dropdown-content-portal a + button {
+  border-top: 1px solid #eee;
+}
+
+.button-inside-drop {
+  color: #073776 !important; /* use theme blue instead of red */
+  font-weight: 600 !important;
+}
+
+.button-inside-drop:hover {
+  background-color: #e3f2fd !important; /* subtle blue hover */
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .navbar {
+    padding: 8px 16px;
+    gap: 12px;
+  }
+
+  .nav-links {
+    display: none;
+  }
+
+  .navbar-logo-img {
+    height: 32px;
+  }
+
+  .t-Tabs-label {
+    display: none;
+  }
+
+  .dropbtn {
+    padding: 6px 10px;
+    font-size: 0.85em;
+  }
+}
+
+/* Melhorias no dropdown portal */
+.dropdown-content-portal {
+  animation: slideDown 0.2s ease-in-out;
+}
+
+/* Ensure portal items are visible immediately when opened */
+.dropdown-content-portal {
+  animation: none !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+}
+
+.dropdown-content-portal a,
+.dropdown-content-portal button {
+  padding: 12px 16px !important;
+  gap: 10px !important;
+  font-size: 0.9em !important;
+  font-weight: 500 !important;
+  color: #222 !important; /* explicit dark color so items are visible */
+  opacity: 1 !important;
+  visibility: visible !important;
+  transition: all 0.2s ease;
+}
+
+.dropdown-content-portal .t-Icon {
+  flex: 0 0 20px;
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+}
+
+.dropdown-content-portal a:hover,
+.dropdown-content-portal button:hover {
+  background-color: #f0f0f0 !important;
+  color: #0085CA !important;
+}
+
+.dropdown-content-portal a:first-child,
+.dropdown-content-portal a:nth-child(2) {
+  color: #073776 !important;
+}
+
+.dropdown-content-portal a:first-child:hover,
+.dropdown-content-portal a:nth-child(2):hover {
+  background-color: #e3f2fd !important;
+  color: #0085CA !important;
+}
+
+.button-inside-drop {
+  color: #073776 !important; /* ensure consistent color */
+  font-weight: 600 !important;
+}
+
+.button-inside-drop:hover {
+  background-color: #e3f2fd !important;
+  color: #033682 !important;
+}
+
+/* Stronger override: make logout button fully red with white icon/text */
+.dropdown-content-portal button.button-inside-drop {
+  background: #d32f2f !important; /* red background */
+  color: #ffffff !important; /* white text */
+  border-radius: 6px !important;
+  border: none !important;
+}
+
+.dropdown-content-portal button.button-inside-drop .t-Icon,
+.dropdown-content-portal button.button-inside-drop svg {
+  color: #ffffff !important;
+  fill: #ffffff !important;
+}
+
+.dropdown-content-portal button.button-inside-drop:hover {
+  background: #b71c1c !important; /* darker red on hover */
+  color: #ffffff !important;
+}
+
+.t-Icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 20px;
+  width: 20px;
+  height: 20px;
+  box-sizing: border-box;
+  margin-right: 8px;
+  text-align: center;
+}
+
+/* Improve responsiveness: ensure dropdown portal uses fixed positioning and adapts */
+.dropdown-content-portal {
+  position: fixed;
+  min-width: 160px;
+  max-width: calc(100% - 16px);
+  z-index: 99999;
+}
+
+/* Ensure FontAwesome svg icons and any inline icons align and don't create extra boxes */
+.t-Icon svg,
+.dropdown-content-portal svg,
+.dropdown-content-portal img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  vertical-align: middle;
+}
+
+/* Make dropdown items uniform width and centered vertically */
+.dropdown-content-portal a,
+.dropdown-content-portal button {
+  align-items: center !important;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 12px 18px !important;
+}
+
+/* Separator should cover the extra left spacing when icons are present */
+.dropdown-content-portal a + a,
+.dropdown-content-portal a + button {
+  border-top: 1px solid #eee;
+}
+
+/* Ensure icon spacing is consistent */
+.t-Icon {
+  margin-right: 12px;
+}
+
+/* Fix: ensure navbar icons keep a stable size and don't shrink on :active/:focus */
+.nav-links .links a .t-Icon {
+  flex: 0 0 20px;
+  width: 20px;
+  height: 20px;
+  box-sizing: border-box;
+  transition: none !important;
+}
+
+.nav-links .links a .t-Icon svg {
+  width: 18px !important;
+  height: 18px !important;
+  display: block;
+  vertical-align: middle;
+}
+
+/* Slightly reduce spacing so icon+label appear centered visually */
+.nav-links .links a {
+  padding: 16px 10px;
+}
+
+/* Make dropdown buttons match anchor alignment exactly */
+.dropdown-content-portal button.button-inside-drop {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  padding: 12px 16px !important;
+}
